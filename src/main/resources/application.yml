@@ -1,0 +1,88 @@
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+  file:
+    name: application.log
+
+spring:
+  profiles:
+    active: local
+
+  application:
+    name: DoItTogether
+
+  data:
+    redis:
+      host: ${REDIS_HOST} # redis 서버의 호스트 이름
+      port: ${REDIS_PORT} # redis 서버의 포트 번호
+      maxmemory: 128M
+      invite-link:
+        ttl-minutes: ${REDIS_INVITE_TTL} # 초대 링크 TTL (분)
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${HOME_URL}
+    username: ${HOME_USERNAME}
+    password: ${HOME_PASSWORD}
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: mysql
+    hibernate:
+      ddl-auto: update
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-name: kakao
+            client-id: ${KAKAO_RESTAPI_KEY}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
+            client-authentication-method: client_secret_post
+            scope:
+              - profile_nickname
+              - account_email
+              - profile_image
+
+        provider:
+          kakao:
+            authorization_uri: https://kauth.kakao.com/oauth/authorize
+            token_uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user_name_attribute: id
+
+springdoc:
+  api-docs:
+    path: /api-docs  # API 문서의 기본 경로
+  swagger-ui:
+    path: /api  # Swagger UI에 접근하기 위한 URL 경로
+    operationsSorter: alpha  # API 정렬 기준 (alpha: 알파벳순)
+    tagsSorter: alpha        # 태그 정렬 기준
+    disable-swagger-default-url: false # Swagger 기본 URL 표시 비활성화
+
+openai:
+  secret-key: ${OPENAI_SECRET_KEY}
+  model: ${OPENAI_MODEL}
+  api:
+    url: https://api.openai.com/v1/chat/completions
+
+front:
+  url: http://localhost:5173
+
+jwt:
+  secret: ${JWT_SECRET}
+
+management:
+  endpoint:
+    endpoints:
+      web:
+        base-path: /health-check
+
