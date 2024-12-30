@@ -5,8 +5,8 @@ import com.doittogether.platform.application.global.response.SuccessResponse;
 import com.doittogether.platform.business.personality.PersonalityService;
 import com.doittogether.platform.business.user.UserService;
 import com.doittogether.platform.domain.entity.User;
-import com.doittogether.platform.presentation.dto.personality.PersonalityRequestDto;
-import com.doittogether.platform.presentation.dto.personality.PersonalityResponseDTO;
+import com.doittogether.platform.presentation.dto.personality.PersonalityRequest;
+import com.doittogether.platform.presentation.dto.personality.PersonalityResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +28,8 @@ public class PersonalityController {
     @PostMapping
     @Operation(summary = "사용자 성향 분석(GPT API)",
             description = "설문조사 내용을 분석하여 키워드를 반환합니다.")
-    public ResponseEntity<SuccessResponse<PersonalityResponseDTO>> findKeywordsFromGPT(
-            Principal principal, @RequestBody PersonalityRequestDto request) {
+    public ResponseEntity<SuccessResponse<PersonalityResponse>> findKeywordsFromGPT(
+            Principal principal, @RequestBody PersonalityRequest request) {
         Long userId = Long.parseLong(principal.getName());
         User loginUser = userService.findByIdOrThrow(userId);
 
@@ -41,7 +41,7 @@ public class PersonalityController {
     @GetMapping
     @Operation(summary = "사용자 성향 조회",
             description = "로그인된 사용자의 성향 정보를 조회합니다.")
-    public ResponseEntity<SuccessResponse<PersonalityResponseDTO>> getUserPersonalities(
+    public ResponseEntity<SuccessResponse<PersonalityResponse>> getUserPersonalities(
             Principal principal) {
         Long userId = Long.parseLong(principal.getName());
         User loginUser = userService.findByIdOrThrow(userId);
