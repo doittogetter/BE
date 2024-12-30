@@ -28,7 +28,7 @@ public class PersonalityController {
     @PostMapping
     @Operation(summary = "사용자 성향 분석(GPT API)",
             description = "설문조사 내용을 분석하여 키워드를 반환합니다.")
-    public ResponseEntity<SuccessResponse<PersonalityResponse>> findKeywordsFromGPT(
+    public ResponseEntity<SuccessResponse<PersonalityResponse>> generateAndSavePersonalityKeywords(
             Principal principal, @RequestBody PersonalityRequest request) {
         Long userId = Long.parseLong(principal.getName());
         User loginUser = userService.findByIdOrThrow(userId);
