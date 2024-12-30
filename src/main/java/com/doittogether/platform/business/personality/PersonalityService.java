@@ -8,7 +8,7 @@ import com.doittogether.platform.presentation.dto.personality.PersonalityRespons
 import java.util.List;
 
 public interface PersonalityService {
-    PersonalityResponse findKeywordsFromGPT(final User user, final PersonalityRequest request);
+    PersonalityResponse generateAndSavePersonalityKeywords(final User user, final PersonalityRequest request);
     void savePersonalities(final User user, final List<String> keywords, PersonalityStatus status);
     PersonalityResponse getUserPersonalities(User user);
 }

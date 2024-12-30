@@ -35,7 +35,7 @@ public class PersonalityController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.onSuccess(SuccessCode._OK,
-                        personalityService.findKeywordsFromGPT(loginUser, request)));
+                        personalityService.generateAndSavePersonalityKeywords(loginUser, request)));
     }
 
     @GetMapping

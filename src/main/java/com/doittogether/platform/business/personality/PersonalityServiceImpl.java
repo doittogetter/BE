@@ -21,6 +21,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class PersonalityServiceImpl implements PersonalityService {
@@ -29,9 +30,8 @@ public class PersonalityServiceImpl implements PersonalityService {
 
     private final PersonalityRepository personalityRepository;
 
-    @Transactional
     @Override
-    public PersonalityResponse findKeywordsFromGPT(final User user, final PersonalityRequest request) {
+    public PersonalityResponse generateAndSavePersonalityKeywords(final User user, final PersonalityRequest request) {
         List<String> keywords = null;
         PersonalityStatus status = PersonalityStatus.VALID;
 
@@ -81,6 +81,7 @@ public class PersonalityServiceImpl implements PersonalityService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PersonalityResponse getUserPersonalities(User user) {
         List<String> keywords = personalityRepository.findByUser(user)
                 .stream()
