@@ -9,7 +9,6 @@ import com.doittogether.platform.domain.entity.PresetItem;
 import com.doittogether.platform.domain.entity.User;
 import com.doittogether.platform.infrastructure.persistence.preset.PresetCategoryRepository;
 import com.doittogether.platform.infrastructure.persistence.preset.PresetItemRepository;
-import com.doittogether.platform.infrastructure.persistence.channel.ChannelRepository;
 import com.doittogether.platform.presentation.dto.preset.request.PresetCategoryRegisterRequest;
 import com.doittogether.platform.presentation.dto.preset.request.PresetItemRegisterRequest;
 import com.doittogether.platform.presentation.dto.preset.response.*;
@@ -17,14 +16,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PresetServiceImpl implements PresetService {
 
-    private final ChannelRepository channelRepository;
     private final PresetCategoryRepository presetCategoryRepository;
     private final PresetItemRepository presetItemRepository;
 
@@ -41,6 +41,7 @@ public class PresetServiceImpl implements PresetService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PresetKeywordListResponse getFlatPresetList(User user, Long channelId, Pageable pageable) {
         channelValidator.checkChannelParticipation(user, channelId);
 
@@ -59,6 +60,7 @@ public class PresetServiceImpl implements PresetService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CategoryPresetResponse getPresetsByCategory(User user, Long channelId, Long presetCategoryId, Pageable pageable) {
         channelValidator.checkChannelParticipation(user, channelId);
 
@@ -82,6 +84,7 @@ public class PresetServiceImpl implements PresetService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CategoryListResponse getAllCategories(User user, Long channelId, Pageable pageable) {
         channelValidator.checkChannelParticipation(user, channelId);
 
@@ -98,6 +101,7 @@ public class PresetServiceImpl implements PresetService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CategoryPresetListResponse getAllCategoriesWithItems(User user, Long channelId, Pageable pageable) {
         channelValidator.checkChannelParticipation(user, channelId);
 
