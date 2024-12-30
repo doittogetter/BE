@@ -1,7 +1,5 @@
 package com.doittogether.platform.business.preset;
 
-import com.doittogether.platform.application.global.code.ExceptionCode;
-import com.doittogether.platform.application.global.exception.preset.PresetException;
 import com.doittogether.platform.business.channel.ChannelValidator;
 import com.doittogether.platform.domain.entity.Channel;
 import com.doittogether.platform.domain.entity.PresetCategory;
@@ -29,6 +27,7 @@ public class PresetServiceImpl implements PresetService {
     private final PresetItemRepository presetItemRepository;
 
     private final ChannelValidator channelValidator;
+    private final PresetValidator presetValidator;
 
     @Override
     public void addDefaultCategoriesToChannel(Channel channel) {
@@ -64,8 +63,7 @@ public class PresetServiceImpl implements PresetService {
     public CategoryPresetResponse getPresetsByCategory(User user, Long channelId, Long presetCategoryId, Pageable pageable) {
         channelValidator.checkChannelParticipation(user, channelId);
 
-        PresetCategory category = presetCategoryRepository.findById(presetCategoryId)
-                .orElseThrow(() -> new PresetException(ExceptionCode.PRESET_CATEGORY_NOT_FOUND));
+        PresetCategory category = presetValidator.validateAndGetPresetCategory(presetCategoryId);
 
         List<PresetItem> items = presetItemRepository.findAllByPresetCategoryId(presetCategoryId, pageable);
 
@@ -141,8 +139,7 @@ public class PresetServiceImpl implements PresetService {
     public PresetItemRegisterResponse createPreset(User user, Long channelId, Long presetCategoryId, PresetItemRegisterRequest request) {
         channelValidator.checkChannelParticipation(user, channelId);
 
-        PresetCategory category = presetCategoryRepository.findById(presetCategoryId)
-                .orElseThrow(() -> new PresetException(ExceptionCode.PRESET_CATEGORY_NOT_FOUND));
+        PresetCategory category = presetValidator.validateAndGetPresetCategory(presetCategoryId);
 
         PresetItem item = PresetItemRegisterRequest.toEntity(request, category);
         item = presetItemRepository.save(item);
@@ -154,8 +151,7 @@ public class PresetServiceImpl implements PresetService {
     public PresetCategoryDeleteResponse deletePresetCategory(User user, Long channelId, Long presetCategoryId) {
         channelValidator.checkChannelParticipation(user, channelId);
 
-        PresetCategory category = presetCategoryRepository.findById(presetCategoryId)
-                .orElseThrow(() -> new PresetException(ExceptionCode.PRESET_CATEGORY_NOT_FOUND));
+        PresetCategory category = presetValidator.validateAndGetPresetCategory(presetCategoryId);
         presetCategoryRepository.delete(category);
         return PresetCategoryDeleteResponse.of(presetCategoryId);
     }
@@ -164,11 +160,9 @@ public class PresetServiceImpl implements PresetService {
     public PresetItemDeleteResponse deletePresetDetail(User user, Long channelId, Long presetCategoryId, Long presetItemId) {
         channelValidator.checkChannelParticipation(user, channelId);
 
-        presetCategoryRepository.findById(presetCategoryId)
-                .orElseThrow(() -> new PresetException(ExceptionCode.PRESET_CATEGORY_NOT_FOUND));
+        presetValidator.validateExistPresetCategory(presetCategoryId);
 
-        PresetItem item = presetItemRepository.findById(presetItemId)
-                .orElseThrow(() -> new PresetException(ExceptionCode.PRESET_ITEM_NOT_FOUND));
+        PresetItem item = presetValidator.validateAndGetPresetItem(presetItemId);
         presetItemRepository.delete(item);
         return new PresetItemDeleteResponse(presetItemId);
     }
