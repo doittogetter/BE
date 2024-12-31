@@ -102,7 +102,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         // 담당자 별로 집안일을 그룹화
         Map<Assignee, List<Housework>> groupedByNickName = houseworkList.stream()
-                .collect(Collectors.groupingBy(Housework::retrieveAssignee));
+                .collect(Collectors.groupingBy(Housework::getAssignee));
 
         //그룹회된 담당자 별로 통계 계산
         List<PersonalCompleteScoreResponse> statisticsList = new ArrayList<>();
@@ -112,9 +112,9 @@ public class StatisticsServiceImpl implements StatisticsService {
             List<Housework> dailyHouseworks = entry.getValue();
 
             // Response 필드 정보 조회
-            String nickName = assignee.retrieveUser().retrieveNickName();
+            String nickName = assignee.retrieveUser().getNickName();
             long completedTasks = dailyHouseworks.stream()
-                    .filter(housework -> housework.retrieveStatus() == Status.COMPLETE)
+                    .filter(housework -> housework.getStatus() == Status.COMPLETE)
                     .count();
             String url = userRepository.findProfileImageUrlByNickName(nickName).orElse("");
 
@@ -131,7 +131,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     public List<SingleDayStatisticsResponse> generateMonthlyStatistics(List<Housework> houseworkList) {
         // 날짜별로 집안일을 그룹화
         Map<LocalDate, List<Housework>> groupedByDate = houseworkList.stream()
-                .collect(Collectors.groupingBy(Housework::retrieveStartDate));
+                .collect(Collectors.groupingBy(Housework::getStartDate));
 
         // 그룹화된 날짜별로 통계 계산
         List<SingleDayStatisticsResponse> statisticsList = new ArrayList<>();
@@ -145,7 +145,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
             // 완료된 집안일 개수
             long completedTasks = dailyHouseworks.stream()
-                    .filter(housework -> housework.retrieveStatus() == Status.COMPLETE)
+                    .filter(housework -> housework.getStatus() == Status.COMPLETE)
                     .count();
 
             // 완료 상태 (3가지 중 하나: ALL_DONE, INCOMPLETE_REMAINING, NO_HOUSEWORK)
@@ -164,7 +164,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         if (totalTasks == 0) {
             return CompletionStatus.NO_HOUSEWORK;
         }
-        boolean allComplete = houseworks.stream().allMatch(h -> h.retrieveStatus() == Status.COMPLETE);
+        boolean allComplete = houseworks.stream().allMatch(h -> h.getStatus() == Status.COMPLETE);
         if (allComplete) {
             return CompletionStatus.ALL_DONE;
         } else {
