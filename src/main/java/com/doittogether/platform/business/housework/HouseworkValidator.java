@@ -19,7 +19,7 @@ public class HouseworkValidator {
     }
 
     public void validateEditableUser(final Housework housework, final User user) {
-        if (housework.retrieveAssignee().retrieveUser().retrieveUserId() != user.retrieveUserId()) {
+        if (housework.getAssignee().retrieveUser().getUserId() != user.getUserId()) {
             throw new HouseworkValidationException(ExceptionCode.HOUSEWORK_NO_PERMISSION);
         }
     }
