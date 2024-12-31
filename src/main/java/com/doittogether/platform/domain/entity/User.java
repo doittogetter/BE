@@ -15,10 +15,12 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
     @Id
@@ -52,26 +54,6 @@ public class User extends BaseEntity {
         user.socialId = socialId;
         user.profileImage = profileImage;
         return user;
-    }
-
-    public Long retrieveUserId() {
-        return userId;
-    }
-
-    public String retrieveNickName() {
-        return nickName;
-    }
-
-    public String retrieveEmail() {
-        return email;
-    }
-
-    public String retrieveSocialId() {
-        return socialId;
-    }
-
-    public ProfileImage retrieveProfileImage() {
-        return profileImage;
     }
 
     public boolean isSetup() {
