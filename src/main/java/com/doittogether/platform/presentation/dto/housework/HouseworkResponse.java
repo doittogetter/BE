@@ -60,16 +60,16 @@ public record HouseworkResponse(
 ) {
     public static HouseworkResponse from(Housework housework) {
         return HouseworkResponse.builder()
-                .houseworkId(housework.retrieveHouseworkId())
-                .category(housework.retrieveCategory().getDisplayName())
-                .task(housework.retrieveTask())
-                .startDate(housework.retrieveStartDate())
-                .startTime(housework.retrieveStartTime())
+                .houseworkId(housework.getHouseworkId())
+                .category(housework.getCategory().getDisplayName())
+                .task(housework.getTask())
+                .startDate(housework.getStartDate())
+                .startTime(housework.getStartTime())
                 .isAllDay(housework.isAllDay())
-                .userId(housework.retrieveAssignee().retrieveUser().retrieveUserId())
-                .status(housework.retrieveStatus())
-                .assigneeId(housework.retrieveAssignee().retrieveAssigneeId())
-                .assignee(housework.retrieveAssignee().retrieveUser().retrieveNickName())
+                .userId(housework.getAssignee().retrieveUser().getUserId())
+                .status(housework.getStatus())
+                .assigneeId(housework.getAssignee().retrieveAssigneeId())
+                .assignee(housework.getAssignee().retrieveUser().getNickName())
                 .build();
     }
 }

@@ -17,9 +17,11 @@ import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Housework extends BaseEntity {
     @Id
@@ -83,39 +85,6 @@ public class Housework extends BaseEntity {
             return;
         }
         this.status = Status.UN_COMPLETE;
-    }
-
-    public Long retrieveHouseworkId() {
-        return houseworkId;
-    }
-
-    public LocalDate retrieveStartDate() {
-        return startDate;
-    }
-
-    public LocalTime retrieveStartTime() {
-        return startTime;
-    }
-
-    public String retrieveTask() {
-        return task;
-    }
-
-    public HouseworkCategory retrieveCategory() {
-        return category;
-    }
-
-    public Status retrieveStatus() {
-        return status;
-    }
-
-
-    public Assignee retrieveAssignee() {
-        return assignee;
-    }
-
-    public Channel retrieveChannel() {
-        return channel;
     }
 
     public boolean isAllDay() {
