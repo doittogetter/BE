@@ -1,5 +1,6 @@
 package com.doittogether.platform.business.housework;
 
+import com.doittogether.platform.domain.entity.Housework;
 import com.doittogether.platform.domain.entity.User;
 import com.doittogether.platform.presentation.dto.housework.HouseworkRequest;
 import com.doittogether.platform.presentation.dto.housework.HouseworkResponse;
@@ -8,6 +9,7 @@ import com.doittogether.platform.presentation.dto.housework.IncompleteScoreRespo
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 public interface HouseworkService {
@@ -33,5 +35,7 @@ public interface HouseworkService {
 
     Map<String, Integer> calculateHouseworkStatisticsForWeek(Long channelId, LocalDate targetDate);
 
-    IncompleteScoreResponse incompleteScoreResponse(User loginuser, Long channelId, LocalDate targetDate);
+    List<Housework> monthlyHouseworkCheck(Long channelId, LocalDate targetDate);
+
+    IncompleteScoreResponse houseworkIncompleteCountCheck(User loginuser, Long channelId, LocalDate targetDate);
 }
