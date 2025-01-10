@@ -9,6 +9,8 @@ import com.doittogether.platform.domain.entity.User;
 import com.doittogether.platform.presentation.dto.housework.HouseworkRequest;
 import com.doittogether.platform.presentation.dto.housework.HouseworkResponse;
 import com.doittogether.platform.presentation.dto.housework.HouseworkSliceResponse;
+import com.doittogether.platform.presentation.dto.housework.HouseworkUserRequest;
+import com.doittogether.platform.presentation.dto.housework.HouseworkUserResponse;
 import com.doittogether.platform.presentation.dto.housework.IncompleteScoreResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,7 +26,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -95,7 +105,7 @@ public class HouseworkControllerImpl implements
     public ResponseEntity<SuccessResponse<HouseworkResponse>> findHouseworkByChannelIdAndHouseworkId(
             Principal principal,
             @PathVariable("channelId") Long channelId,
-            @PathVariable("houseworkId") Long houseworkId){
+            @PathVariable("houseworkId") Long houseworkId) {
         Long userId = Long.parseLong(principal.getName());
         User loginUser = userService.findByIdOrThrow(userId);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -117,6 +127,20 @@ public class HouseworkControllerImpl implements
         houseworkService.addHousework(loginUser, channelId, request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(SuccessResponse.onSuccess());
+    }
+
+    @GetMapping
+    @Operation(summary = "담당자 자동 조회", description = "AI를 이용한 자동 담당자 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @Override
+    public ResponseEntity<SuccessResponse<HouseworkUserResponse>> findAssignee(Principal principal,
+                                                                               @RequestBody HouseworkUserRequest request) {
+        HouseworkUserResponse houseworkUserResponse =
+                houseworkService.assignHouseworkFromGPT(request.houseworkId(), request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponse.onSuccess(SuccessCode._OK, houseworkUserResponse));
     }
 
     @PutMapping("/{houseworkId}")
@@ -200,13 +224,13 @@ public class HouseworkControllerImpl implements
     @GetMapping("/daily/incomplete")
     @Operation(summary = "집안일 일간 미 완료 개수 조회", description = "집안일 일간 별로 미 완료 개수를 조회합니다.")
     @Override
-    public ResponseEntity<SuccessResponse<IncompleteScoreResponse>>houseworkCalculateTotalCountByChannelId(
+    public ResponseEntity<SuccessResponse<IncompleteScoreResponse>> houseworkCalculateTotalCountByChannelId(
             Principal principal,
             @PathVariable("channelId") Long channelId,
             @RequestParam("targetDate")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             @Parameter(description = "선택 날짜 (yyyy-MM-dd 형식)", example = "2024-11-25") LocalDate targetDate
-    ){
+    ) {
         Long userId = Long.parseLong(principal.getName());
         User loginUser = userService.findByIdOrThrow(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
