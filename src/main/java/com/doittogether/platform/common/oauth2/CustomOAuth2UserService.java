@@ -1,13 +1,10 @@
 package com.doittogether.platform.common.oauth2;
 
+import com.doittogether.platform.common.oauth2.dto.*;
 import com.doittogether.platform.domain.entity.ProfileImage;
 import com.doittogether.platform.domain.entity.User;
 import com.doittogether.platform.infrastructure.persistence.user.ProfileImageRepository;
 import com.doittogether.platform.infrastructure.persistence.user.UserRepository;
-import com.doittogether.platform.common.oauth2.dto.CustomOAuth2User;
-import com.doittogether.platform.common.oauth2.dto.KakaoOAuth2Response;
-import com.doittogether.platform.common.oauth2.dto.OAuth2Response;
-import com.doittogether.platform.common.oauth2.dto.OAuth2UserDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -27,11 +24,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        OAuth2Response oAuth2Response = null;
 
-        if ("kakao".equals(registrationId)) {
-            oAuth2Response = new KakaoOAuth2Response(oAuth2User.getAttributes());
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+
+        OAuth2Response oAuth2Response = null;
+        switch (registrationId) {
+            case "kakao":
+                oAuth2Response = new KakaoOAuth2Response(oAuth2User.getAttributes());
+                break;
+            case "google":
+                oAuth2Response = new GoogleOAuth2Response(oAuth2User.getAttributes());
+                break;
+            case "naver":
+                oAuth2Response = new NaverOAuth2Response(oAuth2User.getAttributes());
+                break;
+            default:
+                break;
         }
 
         final String socialId = oAuth2Response.getProvider() + "_" + oAuth2Response.getProviderId();
