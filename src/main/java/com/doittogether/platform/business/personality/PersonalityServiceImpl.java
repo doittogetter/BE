@@ -2,24 +2,21 @@ package com.doittogether.platform.business.personality;
 
 import com.doittogether.platform.application.global.code.ExceptionCode;
 import com.doittogether.platform.application.global.exception.personality.PersonalityException;
-import com.doittogether.platform.business.openai.ChatGPTService;
+import com.doittogether.platform.business.openai.KeyWordChatGPTService;
 import com.doittogether.platform.business.openai.dto.ChatGPTResponse;
 import com.doittogether.platform.business.openai.util.TemplateUtil;
 import com.doittogether.platform.domain.entity.Personality;
 import com.doittogether.platform.domain.entity.User;
 import com.doittogether.platform.domain.enumeration.PersonalityStatus;
 import com.doittogether.platform.infrastructure.persistence.personality.PersonalityRepository;
-import com.doittogether.platform.infrastructure.persistence.user.UserRepository;
 import com.doittogether.platform.presentation.dto.personality.PersonalityRequestDto;
 import com.doittogether.platform.presentation.dto.personality.PersonalityResponseDTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -28,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PersonalityServiceImpl implements PersonalityService {
 
-    private final ChatGPTService chatGPTService;
+    private final KeyWordChatGPTService keyWordChatGPTService;
 
     private final PersonalityRepository personalityRepository;
 
@@ -39,7 +36,7 @@ public class PersonalityServiceImpl implements PersonalityService {
         PersonalityStatus status = PersonalityStatus.VALID;
 
         try {
-            ChatGPTResponse chatGPTResponse = chatGPTService.chat(request);
+            ChatGPTResponse chatGPTResponse = keyWordChatGPTService.chat(request);
             String jsonResponse = chatGPTResponse.getChoices().get(0).getMessage().getContent();
 
             keywords = TemplateUtil.mapJsonToKeywords(jsonResponse); // gpt 가 추천해주는 키워드
