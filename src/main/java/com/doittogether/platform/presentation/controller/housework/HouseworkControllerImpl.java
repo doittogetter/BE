@@ -129,16 +129,16 @@ public class HouseworkControllerImpl implements
                 .body(SuccessResponse.onSuccess());
     }
 
-    @GetMapping
+    @GetMapping("/assignHouseworkAi")
     @Operation(summary = "담당자 자동 조회", description = "AI를 이용한 자동 담당자 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     @Override
-    public ResponseEntity<SuccessResponse<HouseworkUserResponse>> findAssignee(Principal principal,
+    public ResponseEntity<SuccessResponse<HouseworkUserResponse>> findAssignee(@PathVariable("channelId") Long channelId,
                                                                                @RequestBody HouseworkUserRequest request) {
         HouseworkUserResponse houseworkUserResponse =
-                houseworkService.assignHouseworkFromGPT(request.houseworkId(), request);
+                houseworkService.assignHouseworkFromGPT(request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.onSuccess(SuccessCode._OK, houseworkUserResponse));
     }
