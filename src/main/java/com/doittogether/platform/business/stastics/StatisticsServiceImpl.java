@@ -61,7 +61,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         Map<String, Integer> reactionStatistics = reactionService.calculateReactionStatisticsForWeek(channelId, targetDate);
 
         Map<String, Object> statistics = new HashMap<>();
-        statistics.put("channelName", channel.retrieveName());
+        statistics.put("channelName", channel.getName());
         statistics.put("completeCount", houseworkStatistics.getOrDefault("completeCount", 0));
         statistics.put("unCompletedCount", houseworkStatistics.getOrDefault("unCompletedCount", 0));
         statistics.put("complimentCount", reactionStatistics.getOrDefault("complimentCount", 0));
