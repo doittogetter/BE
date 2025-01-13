@@ -85,6 +85,10 @@ public class Housework extends BaseEntity {
         this.status = Status.UN_COMPLETE;
     }
 
+    public void updateAssignee(Assignee assignee){
+        this.assignee=assignee;
+    }
+
     public Long retrieveHouseworkId() {
         return houseworkId;
     }
