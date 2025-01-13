@@ -1,10 +1,13 @@
 package com.doittogether.platform.infrastructure.persistence.user;
 
+import com.doittogether.platform.domain.entity.Channel;
 import com.doittogether.platform.domain.entity.User;
+import com.doittogether.platform.domain.entity.UserChannel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -14,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<String> findProfileImageUrlByNickName(@Param("nickName") String nickName);
 
     User findBySocialId(String socialId);
+
+    List<User> findByUserChannelsUserChannelId(Long userChannelId);
 }
