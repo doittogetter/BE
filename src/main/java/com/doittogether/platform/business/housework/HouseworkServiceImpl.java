@@ -4,11 +4,16 @@ import com.doittogether.platform.application.global.code.ExceptionCode;
 import com.doittogether.platform.application.global.exception.housework.HouseworkException;
 import com.doittogether.platform.application.global.exception.statistics.StatisticsException;
 import com.doittogether.platform.business.channel.ChannelValidator;
+import com.doittogether.platform.business.openai.AssignChoreChatGPTService;
+import com.doittogether.platform.business.openai.dto.AssignChoreChatGPTResponse;
+import com.doittogether.platform.business.openai.dto.ChatGPTResponse;
+import com.doittogether.platform.business.openai.util.TemplateUtil;
 import com.doittogether.platform.domain.entity.Assignee;
 import com.doittogether.platform.domain.entity.Channel;
 import com.doittogether.platform.domain.entity.Housework;
 import com.doittogether.platform.domain.entity.User;
 import com.doittogether.platform.domain.enumeration.HouseworkCategory;
+import com.doittogether.platform.domain.enumeration.PersonalityStatus;
 import com.doittogether.platform.domain.enumeration.Status;
 import com.doittogether.platform.infrastructure.persistence.housework.AssigneeRepository;
 import com.doittogether.platform.infrastructure.persistence.housework.HouseworkRepository;
@@ -16,6 +21,7 @@ import com.doittogether.platform.infrastructure.persistence.user.UserRepository;
 import com.doittogether.platform.presentation.dto.housework.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -29,6 +35,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class HouseworkServiceImpl implements HouseworkService {
 
@@ -38,6 +45,50 @@ public class HouseworkServiceImpl implements HouseworkService {
     private final HouseworkValidator houseworkValidator;
     private final ChannelValidator channelValidator;
     private final UserRepository userRepository;
+    private final AssignChoreChatGPTService assignChoreChatGPTService;
+
+    @Override
+    public HouseworkUserResponse assignHouseworkFromGPT(final HouseworkUserRequest request) {
+        //UserChannelId , houseworkId, String
+        Long userId = 0L;
+        String assignee = null;
+
+        try {
+            AssignChoreChatGPTResponse assignChoreChatGPTResponse = assignChoreChatGPTService.chat(request);
+            // UserId, String Assignee
+            userId = assignChoreChatGPTResponse.getUserId();
+            assignee = assignChoreChatGPTResponse.getAssignee();
+        } catch (Exception e) {
+            log.error("Unable to assign chore using AssignChoreChatGPTService. Exception: {}",
+                    e.getMessage(), e);
+        }
+
+        if (assignee == null || assignee.isEmpty()) {
+
+        }
+
+        saveAssignee(userId, request);
+        return HouseworkUserResponse.of(userId, assignee);
+    }
+
+    @Override
+    public void saveAssignee(Long userId,
+                             final HouseworkUserRequest request) {
+        // Housework 검색 및 할당자 설정
+        Housework housework = houseworkRepository.findByChannelChannelIdAndHouseworkId(
+                request.userChannelId(),
+                request.houseworkId()
+        ).orElseThrow(() -> new RuntimeException("Housework not found for channelId: " + request.userChannelId()
+                + ", houseworkId: " + request.houseworkId()));
+
+        User newAssignee = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found for userId: " +userId));
+
+        housework.updateAssignee(assigneeRepository.findByUserUserId(newAssignee.retrieveUserId()).
+                orElseThrow(() -> new RuntimeException("Assignee not found for userId: " + userId)));
+
+        houseworkRepository.save(housework);
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -168,7 +219,7 @@ public class HouseworkServiceImpl implements HouseworkService {
     }
 
     @Override
-    public IncompleteScoreResponse incompleteScoreResponse(User loginUser, Long channelId, LocalDate targetDate){
+    public IncompleteScoreResponse incompleteScoreResponse(User loginUser, Long channelId, LocalDate targetDate) {
         channelValidator.validateExistChannel(channelId);
         channelValidator.checkChannelParticipation(loginUser, channelId);
 
