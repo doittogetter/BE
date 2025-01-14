@@ -68,6 +68,8 @@ dependencies {
 
     // firebase sdk
     implementation 'com.google.firebase:firebase-admin:9.2.0'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.15.0'
+
 }
 
 tasks.named('test') {
