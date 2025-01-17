@@ -66,10 +66,10 @@ public record HouseworkResponse(
                 .startDate(housework.retrieveStartDate())
                 .startTime(housework.retrieveStartTime())
                 .isAllDay(housework.isAllDay())
-                .userId(housework.retrieveAssignee().retrieveUser().retrieveUserId())
+                .userId(housework.retrieveAssignee().retrieveUser().getUserId())
                 .status(housework.retrieveStatus())
                 .assigneeId(housework.retrieveAssignee().retrieveAssigneeId())
-                .assignee(housework.retrieveAssignee().retrieveUser().retrieveNickName())
+                .assignee(housework.retrieveAssignee().retrieveUser().getNickName())
                 .build();
     }
 }
