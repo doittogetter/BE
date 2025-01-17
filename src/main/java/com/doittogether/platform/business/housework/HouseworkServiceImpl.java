@@ -48,7 +48,7 @@ public class HouseworkServiceImpl implements HouseworkService {
         channelValidator.validateExistChannel(channelId);
         channelValidator.checkChannelParticipation(loginUser, channelId);
         final Slice<Housework> houseworks = houseworkRepository.findAllByChannelIdAndTargetDate(
-                channelId, loginUser.retrieveUserId(), pageable, targetDate);
+                channelId, loginUser.getUserId(), pageable, targetDate);
 
         return HouseworkSliceResponse.from(houseworks);
     }

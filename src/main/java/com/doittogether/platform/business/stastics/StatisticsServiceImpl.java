@@ -102,7 +102,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                     Assignee assignee = entry.getKey();
                     List<Housework> dailyHouseworks = entry.getValue();
 
-                    String nickName = assignee.retrieveUser().retrieveNickName();
+                    String nickName = assignee.retrieveUser().getNickName();
                     long completedTasks = dailyHouseworks.stream()
                             .filter(housework -> housework.retrieveStatus() == Status.COMPLETE)
                             .count();
