@@ -43,7 +43,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public ChannelListResponse getMyChannels(User loginUser, Pageable pageable) {
-        User user = userRepository.findById(loginUser.retrieveUserId())
+        User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
 
         Pageable resolvedPageable = resolveSort(pageable);
@@ -57,7 +57,7 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     @Transactional
     public ChannelRegisterResponse createChannel(User loginUser, ChannelRegisterRequest request) {
-        User user = userRepository.findById(loginUser.retrieveUserId())
+        User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
 
         Channel channel = ChannelRegisterRequest.toEntity(request);
@@ -73,7 +73,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public ChannelUpdateResponse updateChannelName(User loginUser, Long channelId, ChannelUpdateRequest request) {
-        User user = userRepository.findById(loginUser.retrieveUserId())
+        User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
 
         Channel channel = channelRepository.findById(channelId)
@@ -96,7 +96,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public ChannelUserListResponse getChannelUsers(User loginUser, Long channelId, Pageable pageable) {
-        User user = userRepository.findById(loginUser.retrieveUserId())
+        User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
 
         Channel channel = channelRepository.findById(channelId)
@@ -132,7 +132,7 @@ public class ChannelServiceImpl implements ChannelService {
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new ChannelException(ExceptionCode.CHANNEL_NOT_FOUND));
 
-        User user = userRepository.findById(loginUser.retrieveUserId())
+        User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
 
         boolean isUserInChannel = userChannelRepository.existsByUserAndChannel(user, channel);
@@ -149,7 +149,7 @@ public class ChannelServiceImpl implements ChannelService {
     @Transactional
     @Override
     public ChannelKickUserResponse kickUserFromChannel(User loginUser, Long channelId, ChannelKickUserRequest request) {
-        User adminUser = userRepository.findById(loginUser.retrieveUserId())
+        User adminUser = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
 
         Channel channel = channelRepository.findById(channelId)
@@ -184,7 +184,7 @@ public class ChannelServiceImpl implements ChannelService {
     @Transactional
     @Override
     public void leaveChannel(User loginUser, Long channelId) {
-        User user = userRepository.findById(loginUser.retrieveUserId())
+        User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new ChannelException(ExceptionCode.CHANNEL_NOT_FOUND));

@@ -30,7 +30,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         final CustomOAuth2User customOAuth2UserDetails = (CustomOAuth2User) authentication.getPrincipal();
         final String socialId = customOAuth2UserDetails.getName();
         final User user = userRepository.findBySocialId(socialId);
-        final UserAuthentication userAuthentication = new UserAuthentication(user.retrieveUserId(), null, null);
+        final UserAuthentication userAuthentication = new UserAuthentication(user.getUserId(), null, null);
         final String token = jwtProvider.generateToken(userAuthentication);
 
         response.setStatus(HttpServletResponse.SC_OK);

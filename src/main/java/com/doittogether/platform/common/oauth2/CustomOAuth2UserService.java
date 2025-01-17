@@ -66,10 +66,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomOAuth2User(oAuth2UserDTO);
         }
         final OAuth2UserDTO oAuth2UserDTO = OAuth2UserDTO.of(
-                existedUserOrNull.retrieveNickName(),
-                existedUserOrNull.retrieveEmail(),
-                existedUserOrNull.retrieveSocialId(),
-                existedUserOrNull.retrieveProfileImage()
+                existedUserOrNull.getNickName(),
+                existedUserOrNull.getEmail(),
+                existedUserOrNull.getSocialId(),
+                existedUserOrNull.getProfileImage()
         );
         return new CustomOAuth2User(oAuth2UserDTO);
     }
