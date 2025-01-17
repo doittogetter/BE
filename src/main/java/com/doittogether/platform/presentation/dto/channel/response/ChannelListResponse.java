@@ -18,7 +18,7 @@ public record ChannelListResponse (
 ) {
     public static ChannelListResponse of(User user, Page<ChannelResponse> channelResponsePage) {
         return ChannelListResponse.builder()
-                .userId(user.retrieveUserId())
+                .userId(user.getUserId())
                 .channelList(channelResponsePage.getContent())
                 .build();
     }

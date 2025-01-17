@@ -155,6 +155,16 @@ public class HouseworkServiceImpl implements HouseworkService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Housework> monthlyHouseworkCheck(Long channelId, LocalDate targetDate){
+
+        final LocalDate firstDayOfMonth = targetDate.with(TemporalAdjusters.firstDayOfMonth()); // 1일
+        final LocalDate lastDayOfMonth = targetDate.with(TemporalAdjusters.lastDayOfMonth()); // 해당 달의 마지막 날
+
+        return houseworkRepository.findByChannelChannelIdAndStartDateBetween(channelId, firstDayOfMonth, lastDayOfMonth);
+    }
+
+    @Override
     public void deleteHousework(final User loginUser, final Long houseworkId, final Long channelId) {
         channelValidator.validateExistChannel(channelId);
         houseworkValidator.validateExistHousework(houseworkId);
@@ -168,7 +178,7 @@ public class HouseworkServiceImpl implements HouseworkService {
     }
 
     @Override
-    public IncompleteScoreResponse incompleteScoreResponse(User loginUser, Long channelId, LocalDate targetDate){
+    public IncompleteScoreResponse houseworkIncompleteCountCheck(User loginUser, Long channelId, LocalDate targetDate){
         channelValidator.validateExistChannel(channelId);
         channelValidator.checkChannelParticipation(loginUser, channelId);
 

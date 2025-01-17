@@ -14,16 +14,17 @@ import com.doittogether.platform.presentation.dto.reaction.ReactionRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ReactionServiceImpl implements ReactionService {
 
@@ -55,6 +56,7 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Map<String, Integer> calculateReactionStatisticsForWeek(Long channelId, LocalDate targetDate) {
         LocalDate startOfWeek = targetDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)); // 일 부터
         LocalDate endOfWeek = targetDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)); // 토 까지
@@ -72,6 +74,7 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Map<String, Object> calculateReactionsStatisticsMVPForMonthly(Long channelId, LocalDate targetDate) {
         Map<String, Object> statistics = new HashMap<>();
         LocalDate startDate = targetDate.withDayOfMonth(1);

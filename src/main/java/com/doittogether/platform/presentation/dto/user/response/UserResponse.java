@@ -24,15 +24,15 @@ public record UserResponse(
 ) {
     public static UserResponse from(User user) {
         String profileImageUrl = "";
-        if (user.retrieveProfileImage() != null) {
-            profileImageUrl = user.retrieveProfileImage().getUrl();
+        if (user.getProfileImage() != null) {
+            profileImageUrl = user.getProfileImage().getUrl();
         }
 
         return UserResponse.builder()
-                .userId(user.retrieveUserId())
-                .nickName(user.retrieveNickName())
-                .email(user.retrieveEmail())
-                .socialId(user.retrieveSocialId())
+                .userId(user.getUserId())
+                .nickName(user.getNickName())
+                .email(user.getEmail())
+                .socialId(user.getSocialId())
                 .profileImageUrl(profileImageUrl)
                 .build();
     }
