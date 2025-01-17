@@ -199,7 +199,7 @@ public class HouseworkServiceImpl implements HouseworkService {
 
         // 날짜별 집안일 그룹화
         Map<LocalDate, List<Housework>> groupedByDate = houseworkList.stream()
-                .collect(Collectors.groupingBy(Housework::retrieveStartDate));
+                .collect(Collectors.groupingBy(Housework::getStartDate));
 
         // 날짜 범위 내 모든 날짜 초기화
         List<PersonalIncompleteScoreResponse> houseworkCheckList = new ArrayList<>();
@@ -213,7 +213,7 @@ public class HouseworkServiceImpl implements HouseworkService {
 
             // 미진행 집안일 개수
             int incompletedTasks = (int) dailyHouseworks.stream()
-                    .filter(housework -> housework.retrieveStatus() == Status.UN_COMPLETE)
+                    .filter(housework -> housework.getStatus() == Status.UN_COMPLETE)
                     .count();
 
             // 상태 계산
