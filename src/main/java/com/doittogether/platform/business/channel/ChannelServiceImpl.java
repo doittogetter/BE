@@ -169,9 +169,8 @@ public class ChannelServiceImpl implements ChannelService {
         reactionRepository.deleteByUserIdOrTargetUserId(targetUser.getUserId());
 
         // 추방 당하는 사용자의 집안일 연관 삭제
-        Assignee assignee = assigneeRepository.findByUserUserId(targetUser.getUserId())
-                .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
-        houseworkRepository.deleteByAssigneeId(assignee.retrieveAssigneeId());
+        assigneeRepository.findByUserUserId(targetUser.getUserId())
+                .ifPresent(assignee -> houseworkRepository.deleteByAssigneeId(assignee.retrieveAssigneeId()));
 
         UserChannel targetUserChannel = userChannelRepository.findByUserAndChannel(targetUser, channel)
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_IN_CHANNEL));
@@ -196,9 +195,8 @@ public class ChannelServiceImpl implements ChannelService {
         reactionRepository.deleteByUserIdOrTargetUserId(user.getUserId());
 
         // 나가는 사용자의 집안일 연관 삭제
-        Assignee assignee = assigneeRepository.findByUserUserId(user.getUserId())
-                .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
-        houseworkRepository.deleteByAssigneeId(assignee.retrieveAssigneeId());
+        assigneeRepository.findByUserUserId(user.getUserId())
+                .ifPresent(assignee -> houseworkRepository.deleteByAssigneeId(assignee.retrieveAssigneeId()));
 
         if (userChannel.isRoleAdmin()) { // 관리자 이라면,
             if (channel.getUserChannels().size() == 1) { // 방에 관리자가 혼자 남은 경우
