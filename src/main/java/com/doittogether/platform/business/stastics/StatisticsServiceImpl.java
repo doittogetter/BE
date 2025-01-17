@@ -124,7 +124,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
                     int totalTasks = dailyHouseworks.size();
                     long completedTasks = dailyHouseworks.stream()
-                            .filter(housework -> housework.geteStatus() == Status.COMPLETE)
+                            .filter(housework -> housework.getStatus() == Status.COMPLETE)
                             .count();
                     CompletionStatus status = calculateCompletionStatus(dailyHouseworks, totalTasks);
 
