@@ -166,10 +166,10 @@ public class ChannelServiceImpl implements ChannelService {
                 .orElseThrow(() -> new ChannelException(ExceptionCode.ASSIGNEE_NOT_IN_CHANNEL));
 
         // 추방 당하는 사용자의 알림들 연관 삭제
-        reactionRepository.deleteByUserIdOrTargetUserId(targetUser.retrieveUserId());
+        reactionRepository.deleteByUserIdOrTargetUserId(targetUser.getUserId());
 
         // 추방 당하는 사용자의 집안일 연관 삭제
-        Assignee assignee = assigneeRepository.findByUserUserId(targetUser.retrieveUserId())
+        Assignee assignee = assigneeRepository.findByUserUserId(targetUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
         houseworkRepository.deleteByAssigneeId(assignee.retrieveAssigneeId());
 
@@ -193,10 +193,10 @@ public class ChannelServiceImpl implements ChannelService {
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_CHANNEL_RELATION_NOT_FOUND));
 
         // 나가는 사용자의 알림들 연관 삭제
-        reactionRepository.deleteByUserIdOrTargetUserId(user.retrieveUserId());
+        reactionRepository.deleteByUserIdOrTargetUserId(user.getUserId());
 
         // 나가는 사용자의 집안일 연관 삭제
-        Assignee assignee = assigneeRepository.findByUserUserId(user.retrieveUserId())
+        Assignee assignee = assigneeRepository.findByUserUserId(user.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
         houseworkRepository.deleteByAssigneeId(assignee.retrieveAssigneeId());
 
