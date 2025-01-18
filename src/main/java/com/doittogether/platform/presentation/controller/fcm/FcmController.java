@@ -5,7 +5,6 @@ import com.doittogether.platform.application.global.response.SuccessResponse;
 import com.doittogether.platform.business.fcm.FcmService;
 import com.doittogether.platform.business.user.UserService;
 import com.doittogether.platform.domain.entity.User;
-import com.doittogether.platform.presentation.dto.fcm.NotificationRequest;
 import com.doittogether.platform.presentation.dto.fcm.SaveOrUpdateTokenRequest;
 import com.doittogether.platform.presentation.dto.reaction.ReactionRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,10 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/v1/fcm")
+@RequestMapping("/api/v1/fcms")
 @RequiredArgsConstructor
-@Tag(name = "FCM", description = "FCM 토큰 및 푸쉬 알림 관리 API")
-public class FCMController {
+@Tag(name = "FCM API", description = "FCM 토큰 및 푸쉬 알림 관리 API")
+public class FcmController {
 
     private final FcmService fcmService;
     private final UserService userService;
@@ -41,7 +40,7 @@ public class FCMController {
                 .body(SuccessResponse.onSuccess(SuccessCode._OK, null));
     }
 
-    @Operation(summary = "푸쉬 알림 전송", description = "사용자에게 푸쉬 알림을 전송합니다.")
+    @Operation(summary = "푸쉬 알림 전송", description = "타켓 사용자에게 푸쉬 알림을 전송합니다.")
     @GetMapping("/push")
     public ResponseEntity<SuccessResponse<Void>> sendPushNotification(
             Principal principal,
