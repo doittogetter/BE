@@ -2,33 +2,55 @@ package com.doittogether.platform.presentation.controller.fcm;
 
 import com.doittogether.platform.application.global.code.SuccessCode;
 import com.doittogether.platform.application.global.response.SuccessResponse;
-import com.doittogether.platform.business.fcm.FCMService;
-import com.doittogether.platform.presentation.dto.fcm.PushRequest;
+import com.doittogether.platform.business.fcm.FcmService;
+import com.doittogether.platform.business.user.UserService;
+import com.doittogether.platform.domain.entity.User;
+import com.doittogether.platform.presentation.dto.fcm.NotificationRequest;
+import com.doittogether.platform.presentation.dto.fcm.SaveOrUpdateTokenRequest;
+import com.doittogether.platform.presentation.dto.reaction.ReactionRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/v1/push")
+@RequestMapping("/api/v1/fcm")
 @RequiredArgsConstructor
+@Tag(name = "FCM", description = "FCM 토큰 및 푸쉬 알림 관리 API")
 public class FCMController {
 
-    private final FCMService fcmService;
+    private final FcmService fcmService;
+    private final UserService userService;
 
-    @GetMapping("/test-fcm")
+    @Operation(summary = "FCM 토큰 저장 또는 업데이트", description = "로그인한 사용자의 FCM 토큰을 저장하거나 업데이트합니다.")
+    @PostMapping("/token")
+    public ResponseEntity<SuccessResponse<Void>> saveOrUpdateToken(
+            Principal principal,
+            @RequestBody SaveOrUpdateTokenRequest saveOrUpdateTokenRequest) {
+
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.findByIdOrThrow(userId);
+
+        fcmService.saveOrUpdateToken(user, saveOrUpdateTokenRequest);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponse.onSuccess(SuccessCode._OK, null));
+    }
+
+    @Operation(summary = "푸쉬 알림 전송", description = "사용자에게 푸쉬 알림을 전송합니다.")
+    @GetMapping("/push")
     public ResponseEntity<SuccessResponse<Void>> sendPushNotification(
-            @RequestBody PushRequest pushRequest) {
+            Principal principal,
+            @RequestBody ReactionRequest reactionRequest) {
 
-        // 푸쉬 알림 처리 로직
-        System.out.println("Token: " + pushRequest.token());
-        System.out.println("Title: " + pushRequest.title());
-        System.out.println("Content: " + pushRequest.content());
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.findByIdOrThrow(userId);
 
-        fcmService.sendNotification(pushRequest);
+        fcmService.sendNotification(user, reactionRequest);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.onSuccess(SuccessCode._OK, null));
