@@ -1,7 +1,6 @@
 package com.doittogether.platform.common.config;
 
 import com.doittogether.platform.application.global.code.ExceptionCode;
-import com.doittogether.platform.application.global.exception.GlobalException;
 import com.doittogether.platform.application.global.exception.fcm.FcmException;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
