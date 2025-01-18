@@ -9,7 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -30,7 +29,7 @@ public class Assignee {
 
     public static Assignee assignAssignee(User user){
         final Assignee assignee = new Assignee();
-        assignee.assigneeId = user.retrieveUserId();
+        assignee.assigneeId = user.getUserId();
         assignee.user = user;
         return assignee;
     }

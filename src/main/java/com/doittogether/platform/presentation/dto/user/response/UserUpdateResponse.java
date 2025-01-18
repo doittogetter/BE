@@ -12,7 +12,7 @@ public record UserUpdateResponse(
 ) {
     public static UserUpdateResponse from(User user) {
         return UserUpdateResponse.builder()
-                .userId(user.retrieveUserId())
+                .userId(user.getUserId())
                 .build();
     }
 }

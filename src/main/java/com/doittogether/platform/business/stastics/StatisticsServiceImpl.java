@@ -96,15 +96,15 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     public List<PersonalCompleteScoreResponse> generateWeeklyStatistics(List<Housework> houseworkList) {
         return houseworkList.stream()
-                .collect(Collectors.groupingBy(Housework::retrieveAssignee)) // Assignee별 그룹화
+                .collect(Collectors.groupingBy(Housework::getAssignee)) // Assignee별 그룹화
                 .entrySet().stream()
                 .map(entry -> {
                     Assignee assignee = entry.getKey();
                     List<Housework> dailyHouseworks = entry.getValue();
 
-                    String nickName = assignee.retrieveUser().retrieveNickName();
+                    String nickName = assignee.retrieveUser().getNickName();
                     long completedTasks = dailyHouseworks.stream()
-                            .filter(housework -> housework.retrieveStatus() == Status.COMPLETE)
+                            .filter(housework -> housework.getStatus() == Status.COMPLETE)
                             .count();
                     String profileImageUrl = userRepository.findProfileImageUrlByNickName(nickName).orElse("");
 
@@ -116,7 +116,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     public List<SingleDayStatisticsResponse> generateMonthlyStatistics(List<Housework> houseworkList) {
         return houseworkList.stream()
-                .collect(Collectors.groupingBy(Housework::retrieveStartDate)) // 날짜별 그룹화
+                .collect(Collectors.groupingBy(Housework::getStartDate)) // 날짜별 그룹화
                 .entrySet().stream()
                 .map(entry -> {
                     LocalDate date = entry.getKey();
@@ -124,7 +124,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
                     int totalTasks = dailyHouseworks.size();
                     long completedTasks = dailyHouseworks.stream()
-                            .filter(housework -> housework.retrieveStatus() == Status.COMPLETE)
+                            .filter(housework -> housework.getStatus() == Status.COMPLETE)
                             .count();
                     CompletionStatus status = calculateCompletionStatus(dailyHouseworks, totalTasks);
 
@@ -139,7 +139,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             return CompletionStatus.NO_HOUSEWORK;
         }
 
-        if (houseworks.stream().allMatch(h -> h.retrieveStatus() == Status.COMPLETE)) {
+        if (houseworks.stream().allMatch(h -> h.getStatus() == Status.COMPLETE)) {
             return CompletionStatus.ALL_DONE;
         }
 

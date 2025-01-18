@@ -7,19 +7,22 @@ import com.doittogether.platform.business.preset.PresetService;
 import com.doittogether.platform.domain.entity.*;
 import com.doittogether.platform.domain.enumeration.Role;
 import com.doittogether.platform.infrastructure.persistence.channel.UserChannelRepository;
+import com.doittogether.platform.infrastructure.persistence.housework.AssigneeRepository;
+import com.doittogether.platform.infrastructure.persistence.housework.HouseworkRepository;
+import com.doittogether.platform.infrastructure.persistence.reaction.ReactionRepository;
 import com.doittogether.platform.infrastructure.persistence.user.UserRepository;
 import com.doittogether.platform.infrastructure.persistence.channel.ChannelRepository;
 import com.doittogether.platform.presentation.dto.channel.request.ChannelKickUserRequest;
 import com.doittogether.platform.presentation.dto.channel.request.ChannelRegisterRequest;
 import com.doittogether.platform.presentation.dto.channel.request.ChannelUpdateRequest;
 import com.doittogether.platform.presentation.dto.channel.response.*;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -31,12 +34,16 @@ public class ChannelServiceImpl implements ChannelService {
     private final UserRepository userRepository;
     private final UserChannelRepository userChannelRepository;
     private final ChannelRepository channelRepository;
+    private final ReactionRepository reactionRepository;
+    private final AssigneeRepository assigneeRepository;
+
     private final InviteLinkService inviteLinkService;
     private final PresetService presetService;
+    private final HouseworkRepository houseworkRepository;
 
     @Override
     public ChannelListResponse getMyChannels(User loginUser, Pageable pageable) {
-        User user = userRepository.findById(loginUser.retrieveUserId())
+        User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
 
         Pageable resolvedPageable = resolveSort(pageable);
@@ -50,7 +57,7 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     @Transactional
     public ChannelRegisterResponse createChannel(User loginUser, ChannelRegisterRequest request) {
-        User user = userRepository.findById(loginUser.retrieveUserId())
+        User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
 
         Channel channel = ChannelRegisterRequest.toEntity(request);
@@ -66,7 +73,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public ChannelUpdateResponse updateChannelName(User loginUser, Long channelId, ChannelUpdateRequest request) {
-        User user = userRepository.findById(loginUser.retrieveUserId())
+        User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
 
         Channel channel = channelRepository.findById(channelId)
@@ -89,7 +96,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public ChannelUserListResponse getChannelUsers(User loginUser, Long channelId, Pageable pageable) {
-        User user = userRepository.findById(loginUser.retrieveUserId())
+        User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
 
         Channel channel = channelRepository.findById(channelId)
@@ -125,7 +132,7 @@ public class ChannelServiceImpl implements ChannelService {
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new ChannelException(ExceptionCode.CHANNEL_NOT_FOUND));
 
-        User user = userRepository.findById(loginUser.retrieveUserId())
+        User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
 
         boolean isUserInChannel = userChannelRepository.existsByUserAndChannel(user, channel);
@@ -139,9 +146,10 @@ public class ChannelServiceImpl implements ChannelService {
         return ChannelJoinResponse.of(channel);
     }
 
+    @Transactional
     @Override
     public ChannelKickUserResponse kickUserFromChannel(User loginUser, Long channelId, ChannelKickUserRequest request) {
-        User adminUser = userRepository.findById(loginUser.retrieveUserId())
+        User adminUser = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
 
         Channel channel = channelRepository.findById(channelId)
@@ -155,7 +163,14 @@ public class ChannelServiceImpl implements ChannelService {
         }
 
         User targetUser = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new ChannelException(ExceptionCode.ASSIGNEE_NOT_IN_CHANNEL));
+
+        // 추방 당하는 사용자의 알림들 연관 삭제
+        reactionRepository.deleteByUserIdOrTargetUserId(targetUser.getUserId());
+
+        // 추방 당하는 사용자의 집안일 연관 삭제
+        assigneeRepository.findByUserUserId(targetUser.getUserId())
+                .ifPresent(assignee -> houseworkRepository.deleteByAssigneeId(assignee.retrieveAssigneeId()));
 
         UserChannel targetUserChannel = userChannelRepository.findByUserAndChannel(targetUser, channel)
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_IN_CHANNEL));
@@ -165,16 +180,23 @@ public class ChannelServiceImpl implements ChannelService {
         return ChannelKickUserResponse.from(targetUser);
     }
 
-    @Override
     @Transactional
+    @Override
     public void leaveChannel(User loginUser, Long channelId) {
-        User user = userRepository.findById(loginUser.retrieveUserId())
+        User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new ChannelException(ExceptionCode.CHANNEL_NOT_FOUND));
 
         UserChannel userChannel = userChannelRepository.findByUserAndChannel(user, channel)
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_CHANNEL_RELATION_NOT_FOUND));
+
+        // 나가는 사용자의 알림들 연관 삭제
+        reactionRepository.deleteByUserIdOrTargetUserId(user.getUserId());
+
+        // 나가는 사용자의 집안일 연관 삭제
+        assigneeRepository.findByUserUserId(user.getUserId())
+                .ifPresent(assignee -> houseworkRepository.deleteByAssigneeId(assignee.retrieveAssigneeId()));
 
         if (userChannel.isRoleAdmin()) { // 관리자 이라면,
             if (channel.getUserChannels().size() == 1) { // 방에 관리자가 혼자 남은 경우
