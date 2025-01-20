@@ -3,7 +3,7 @@ package com.doittogether.platform.business.openai;
 import com.doittogether.platform.business.openai.dto.ChatGPTRequest;
 import com.doittogether.platform.business.openai.dto.ChatGPTResponse;
 import com.doittogether.platform.business.openai.util.TemplateUtil;
-import com.doittogether.platform.presentation.dto.personality.PersonalityRequestDto;
+import com.doittogether.platform.presentation.dto.personality.PersonalityRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class ChatGPTService {
         this.template = template;
     }
 
-    public ChatGPTResponse chat(final PersonalityRequestDto request) {
+    public ChatGPTResponse chat(final PersonalityRequest request) {
         String personalizedQuestion = null;
         try {
             personalizedQuestion = TemplateUtil.replaceSurveyResultWithJson(Prompt.PERSONALITY_PROMPT, request.surveyResultText());

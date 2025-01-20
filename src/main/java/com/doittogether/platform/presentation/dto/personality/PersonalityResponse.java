@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record PersonalityResponseDTO(
+public record PersonalityResponse(
         @Schema(description = "분석 결과 키워드", example = "[\n"
                 + "    \"무난함\uD83D\uDC4C\",\n"
                 + "    \"활동적인\uD83C\uDFC3\u200D♀\uFE0F\",\n"
@@ -15,8 +15,8 @@ public record PersonalityResponseDTO(
                 + "  ]")
         List<String> keywords
 ) {
-    public static PersonalityResponseDTO from(List<String> keywords) {
-        return PersonalityResponseDTO.builder()
+    public static PersonalityResponse from(List<String> keywords) {
+        return PersonalityResponse.builder()
                 .keywords(keywords)
                 .build();
     }
