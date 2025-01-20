@@ -50,6 +50,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     @Override
     public void deleteUser(Long userId) {
         User user = findByIdOrThrow(userId);

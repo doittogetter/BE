@@ -196,7 +196,13 @@ public class ChannelServiceImpl implements ChannelService {
 
         // 나가는 사용자의 집안일 연관 삭제
         assigneeRepository.findByUserUserId(user.getUserId())
-                .ifPresent(assignee -> houseworkRepository.deleteByAssigneeId(assignee.retrieveAssigneeId()));
+                .ifPresent(assignee -> {
+                    // Assignee 와 관련된 집안일들 삭제
+                    houseworkRepository.deleteByAssigneeId(assignee.retrieveAssigneeId());
+
+                    // Assignee 자체 삭제
+                    assigneeRepository.delete(assignee);
+                });
 
         if (userChannel.isRoleAdmin()) { // 관리자 이라면,
             if (channel.getUserChannels().size() == 1) { // 방에 관리자가 혼자 남은 경우
