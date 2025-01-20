@@ -66,7 +66,7 @@ public class ChannelServiceTest {
         ChannelListResponse result = channelService.getMyChannels(mockUser, pageable);
 
         assertNotNull(result);
-        assertEquals(mockUser.retrieveUserId(), result.userId());
+        assertEquals(mockUser.getUserId(), result.userId());
         assertEquals(1, result.channelList().size());
         assertEquals("Test Channel", result.channelList().get(0).name());
 
@@ -262,8 +262,8 @@ public class ChannelServiceTest {
         ChannelKickUserResponse response = channelService.kickUserFromChannel(adminUser, channelId, request);
 
         assertNotNull(response);
-        assertEquals(targetUser.retrieveEmail(), response.email());
-        assertEquals(targetUser.retrieveNickName(), response.nickName());
+        assertEquals(targetUser.getEmail(), response.email());
+        assertEquals(targetUser.getNickName(), response.nickName());
 
         verify(userRepository, times(1)).findByEmail(adminEmail);
         verify(channelRepository, times(1)).findById(channelId);
