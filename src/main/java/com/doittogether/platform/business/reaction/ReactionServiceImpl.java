@@ -3,6 +3,7 @@ package com.doittogether.platform.business.reaction;
 import com.doittogether.platform.application.global.code.ExceptionCode;
 import com.doittogether.platform.application.global.exception.reaction.ReactionException;
 import com.doittogether.platform.business.channel.ChannelValidator;
+import com.doittogether.platform.business.fcm.FcmService;
 import com.doittogether.platform.domain.entity.Channel;
 import com.doittogether.platform.domain.entity.Reaction;
 import com.doittogether.platform.domain.entity.User;
@@ -33,6 +34,8 @@ public class ReactionServiceImpl implements ReactionService {
     private final ReactionRepository reactionRepository;
     private final ChannelValidator channelValidator;
 
+    private final FcmService fcmService;
+
     @Override
     public void react(User user, Long channelId, ReactionRequest request, ReactionType reactionType) {
 
@@ -53,6 +56,7 @@ public class ReactionServiceImpl implements ReactionService {
         );
 
         reactionRepository.save(reaction);
+        fcmService.sendNotification(user, request);
     }
 
     @Override

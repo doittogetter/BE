@@ -109,3 +109,5 @@ management:
       web:
         base-path: /health-check
 
+firebase:
+  sdk-jsonPath: ${FIREBASE_SDK_JSON_PATH}

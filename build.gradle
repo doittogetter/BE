@@ -65,6 +65,11 @@ dependencies {
 
     // 스프링부트 실행 확인 라이브러리
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // firebase sdk
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.15.0'
+
 }
 
 tasks.named('test') {
