@@ -81,7 +81,7 @@ public class UserController {
         Long userId = Long.parseLong(principal.getName());
         User user = userService.findByIdOrThrow(userId);
 
-        boolean isComplete = userService.isSetup(user);
+        boolean isComplete = userService.hasCompletedSetup(user);
         log.info("Profile setup completion status for userId {}: {}", userId, isComplete);
 
         return ResponseEntity.status(HttpStatus.OK).body(
