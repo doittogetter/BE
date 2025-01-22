@@ -30,7 +30,7 @@ public class UserController {
     public ResponseEntity<SuccessResponse<UserResponse>> getCurrentUser(Principal principal) {
         Long userId = Long.parseLong(principal.getName());
         User user = userService.findByIdOrThrow(userId);
-        String provider = userService.getProvider(userId);
+        String provider = userService.getProvider(user.getSocialId());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 SuccessResponse.onSuccess(
@@ -58,7 +58,7 @@ public class UserController {
     @Operation(summary = "특정 회원 정보 조회", description = "특정 회원의 정보를 조회합니다.")
     public ResponseEntity<SuccessResponse<UserResponse>> getUserById(@PathVariable("userId") Long userId) {
         User user = userService.findByIdOrThrow(userId);
-        String provider = userService.getProvider(userId);
+        String provider = userService.getProvider(user.getSocialId());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 SuccessResponse.onSuccess(

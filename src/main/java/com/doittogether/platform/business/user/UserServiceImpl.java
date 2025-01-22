@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
 
     // 소셜 id의 provider 위치 정보
@@ -29,7 +30,6 @@ public class UserServiceImpl implements UserService {
         return user.isSetup();
     }
 
-    @Transactional
     @Override
     public UserUpdateResponse updateNickname(User user, UserUpdateRequest request) {
         user.updateNickName(request.nickName());
@@ -38,19 +38,16 @@ public class UserServiceImpl implements UserService {
         return UserUpdateResponse.from(user);
     }
 
-    @Transactional
     @Override
     public void completeSetup(User user) {
         user.completeSetup();
         userRepository.save(user);
     }
 
-    @Transactional
     @Override
-    public String getProvider(Long id){
-        User user = userRepository.findById(id).orElseThrow(() -> new UserException(ExceptionCode.USER_NOT_FOUND));
+    public String getProvider(String socialId){
 
-        String provider = user.getSocialId().split("_")[PROVIDER_INDEX];
+        String provider = socialId.split("_")[PROVIDER_INDEX];
 
         return provider;
     }

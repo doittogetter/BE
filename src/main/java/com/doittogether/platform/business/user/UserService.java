@@ -13,5 +13,5 @@ public interface UserService {
 
     void completeSetup(User user);
 
-    String getProvider(Long id);
+    String getProvider(String socialId);
 }
