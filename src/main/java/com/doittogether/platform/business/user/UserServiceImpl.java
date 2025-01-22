@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean isSetup(User user) {
+    public boolean hasCompletedSetup(User user) {
         return user.isSetup();
     }
 
