@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
-public record PersonalityRequestDto(
+public record PersonalityRequest(
         @NotNull(message = "설문조사 결과를 입력해주세요.")
         @Schema(description = "설문조사 결과", example = " [\n"
                 + "      \" 물건이 잘 정리되지 않아도 크게 신경 쓰지 않습니다.\",\n"
