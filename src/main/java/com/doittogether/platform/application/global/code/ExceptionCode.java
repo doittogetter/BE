@@ -34,6 +34,12 @@ public enum ExceptionCode implements GlobalCode {
     TEMPORARY_USER_NOT_FOUND_1(HttpStatus.NOT_FOUND, "LOGIN_404", "(임시) Bearer Token 에 이메일을 기입해주세요."),
     TEMPORARY_USER_NOT_FOUND_2(HttpStatus.NOT_FOUND, "LOGIN_404", "(임시) 사용자 정보를 찾을 수 없습니다. - 백엔드에 문의"),
 
+    // FCM 관련
+    FCM_INITIALIZATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FCM_500", "Firebase 초기화에 실패했습니다."),
+    FCM_TARGET_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "FCM_404", "메세지를 보내려는 타겟 사용자를 찾을 수 없습니다."),
+    FCM_TARGET_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "FCM_404", "메세지를 보내려는 타겟 사용자의 토큰 정보를 찾을 수 없습니다."),
+    FCM_MESSAGE_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FCM_500", "FCM 메시지 전송에 실패했습니다."),
+    FCM_INVALID_TARGET(HttpStatus.BAD_REQUEST, "FCM_400", "유효하지 않은 FCM 메시지 대상입니다."),
 
     // 프리셋 관련
     PRESET_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "PRESET_404", "요청한 프리셋 카테고리를 찾을 수 없습니다."),
