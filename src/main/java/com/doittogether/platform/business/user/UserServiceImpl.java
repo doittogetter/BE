@@ -17,6 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final ChannelService channelService;
@@ -34,20 +35,16 @@ public class UserServiceImpl implements UserService {
         return user.isSetup();
     }
 
-    @Transactional
     @Override
     public UserUpdateResponse updateNickname(User user, UserUpdateRequest request) {
         user.updateNickName(request.nickName());
-        user = userRepository.save(user);
 
         return UserUpdateResponse.from(user);
     }
 
-    @Transactional
     @Override
     public void completeSetup(User user) {
         user.completeSetup();
-        userRepository.save(user);
     }
 
     @Override
