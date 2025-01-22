@@ -20,9 +20,12 @@ public record UserResponse(
         String socialId,
 
         @Schema(description = "프로필 이미지 URL")
-        String profileImageUrl
+        String profileImageUrl,
+
+        @Schema(description = "소셜 로그인 종류")
+        String provider
 ) {
-    public static UserResponse from(User user) {
+    public static UserResponse from(User user, String provider) {
         String profileImageUrl = "";
         if (user.getProfileImage() != null) {
             profileImageUrl = user.getProfileImage().getUrl();
@@ -34,6 +37,7 @@ public record UserResponse(
                 .email(user.getEmail())
                 .socialId(user.getSocialId())
                 .profileImageUrl(profileImageUrl)
+                .provider(provider)
                 .build();
     }
 }
