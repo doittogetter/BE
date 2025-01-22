@@ -34,11 +34,12 @@ public class UserController {
         Long userId = Long.parseLong(principal.getName());
         User user = userService.findByIdOrThrow(userId);
         log.info("Successfully retrieved user information for userId: {}", userId);
+        String provider = userService.getProvider(user.getSocialId());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 SuccessResponse.onSuccess(
                         SuccessCode._OK,
-                        UserResponse.from(user)
+                        UserResponse.from(user, provider)
                 ));
     }
 
@@ -65,11 +66,12 @@ public class UserController {
         log.info("Request to get user information for userId: {}", userId);
         User user = userService.findByIdOrThrow(userId);
         log.info("Successfully retrieved user information for userId: {}", userId);
+        String provider = userService.getProvider(user.getSocialId());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 SuccessResponse.onSuccess(
                         SuccessCode._OK,
-                        UserResponse.from(user)
+                        UserResponse.from(user, provider)
                 )
         );
     }

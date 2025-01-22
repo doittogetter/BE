@@ -20,6 +20,9 @@ import java.util.List;
 @Transactional
 public class UserServiceImpl implements UserService {
 
+    // 소셜 id의 provider 위치 정보
+    private static final int PROVIDER_INDEX = 0;
+  
     private final ChannelService channelService;
 
     private final UserRepository userRepository;
@@ -46,6 +49,13 @@ public class UserServiceImpl implements UserService {
     public void completeSetup(User user) {
         user.completeSetup();
     }
+
+    @Override
+    public String getProvider(String socialId){
+
+        String provider = socialId.split("_")[PROVIDER_INDEX];
+
+        return provider;
 
     @Override
     public void deleteUser(Long userId) {
