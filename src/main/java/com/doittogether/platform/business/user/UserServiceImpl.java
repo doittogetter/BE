@@ -51,11 +51,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String getProvider(String socialId){
+    public String getProvider(String socialId) {
 
         String provider = socialId.split("_")[PROVIDER_INDEX];
 
         return provider;
+    }
 
     @Override
     public void deleteUser(Long userId) {
