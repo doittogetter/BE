@@ -13,5 +13,8 @@ public interface UserService {
 
     void completeSetup(User user);
 
+
     String getProvider(Long id);
+  
+    void deleteUser(Long userId);
 }

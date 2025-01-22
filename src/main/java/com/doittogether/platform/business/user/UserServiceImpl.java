@@ -2,7 +2,10 @@ package com.doittogether.platform.business.user;
 
 import com.doittogether.platform.application.global.code.ExceptionCode;
 import com.doittogether.platform.application.global.exception.user.UserException;
+import com.doittogether.platform.business.channel.ChannelService;
 import com.doittogether.platform.domain.entity.User;
+import com.doittogether.platform.domain.entity.UserChannel;
+import com.doittogether.platform.infrastructure.persistence.channel.UserChannelRepository;
 import com.doittogether.platform.infrastructure.persistence.user.UserRepository;
 import com.doittogether.platform.presentation.dto.user.request.UserUpdateRequest;
 import com.doittogether.platform.presentation.dto.user.response.UserUpdateResponse;
@@ -10,14 +13,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     // 소셜 id의 provider 위치 정보
     private static final int PROVIDER_INDEX = 0;
+  
+    private final ChannelService channelService;
 
     private final UserRepository userRepository;
+    private final UserChannelRepository userChannelRepository;
 
     @Override
     public User findByIdOrThrow(Long id) {
@@ -53,5 +61,17 @@ public class UserServiceImpl implements UserService {
         String provider = user.getSocialId().split("_")[PROVIDER_INDEX];
 
         return provider;
+
+    @Override
+    public void deleteUser(Long userId) {
+        User user = findByIdOrThrow(userId);
+
+        List<UserChannel> userChannels = userChannelRepository.findAllByUser(user);
+
+        for (UserChannel userChannel : userChannels) {
+            channelService.leaveChannel(user, userChannel.getChannel().getChannelId());
+        }
+
+        userRepository.delete(user);
     }
 }
