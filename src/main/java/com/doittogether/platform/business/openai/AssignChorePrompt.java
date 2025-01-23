@@ -34,7 +34,7 @@ public class AssignChorePrompt {
                 ### Output:
                 Extracted userid and housework in the desired format to json. like
                 {
-                    UserId : Houswork
+                    UserId : Housework
                 }
                 
                 ### input:
@@ -44,7 +44,7 @@ public class AssignChorePrompt {
                 
                 ### Output:
                 {
-                (your answer) : &{Housework}
+                (your answer) : ${housework}
                 }
     """;
 }
