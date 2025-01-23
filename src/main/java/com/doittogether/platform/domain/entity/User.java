@@ -15,10 +15,12 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
     @Id
@@ -45,6 +47,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = ALL)
     private List<UserChannel> userChannels = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user", cascade = ALL)
+    private FcmToken fcmToken;
+
     public static User of(String nickName, String email, String socialId, ProfileImage profileImage) {
         User user = new User();
         user.nickName = nickName;
@@ -52,26 +57,6 @@ public class User extends BaseEntity {
         user.socialId = socialId;
         user.profileImage = profileImage;
         return user;
-    }
-
-    public Long retrieveUserId() {
-        return userId;
-    }
-
-    public String retrieveNickName() {
-        return nickName;
-    }
-
-    public String retrieveEmail() {
-        return email;
-    }
-
-    public String retrieveSocialId() {
-        return socialId;
-    }
-
-    public ProfileImage retrieveProfileImage() {
-        return profileImage;
     }
 
     public boolean isSetup() {

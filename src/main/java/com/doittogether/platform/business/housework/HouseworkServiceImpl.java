@@ -4,8 +4,6 @@ import com.doittogether.platform.application.global.code.ExceptionCode;
 import com.doittogether.platform.application.global.exception.housework.HouseworkException;
 import com.doittogether.platform.application.global.exception.statistics.StatisticsException;
 import com.doittogether.platform.business.channel.ChannelValidator;
-import com.doittogether.platform.business.openai.AssignChoreChatGPTService;
-import com.doittogether.platform.business.openai.dto.AssignChoreChatGPTResponse;
 import com.doittogether.platform.domain.entity.Assignee;
 import com.doittogether.platform.domain.entity.Channel;
 import com.doittogether.platform.domain.entity.Housework;
@@ -15,14 +13,7 @@ import com.doittogether.platform.domain.enumeration.Status;
 import com.doittogether.platform.infrastructure.persistence.housework.AssigneeRepository;
 import com.doittogether.platform.infrastructure.persistence.housework.HouseworkRepository;
 import com.doittogether.platform.infrastructure.persistence.user.UserRepository;
-import com.doittogether.platform.presentation.dto.housework.HouseworkRequest;
-import com.doittogether.platform.presentation.dto.housework.HouseworkResponse;
-import com.doittogether.platform.presentation.dto.housework.HouseworkSliceResponse;
-import com.doittogether.platform.presentation.dto.housework.HouseworkUserRequest;
-import com.doittogether.platform.presentation.dto.housework.HouseworkUserResponse;
-import com.doittogether.platform.presentation.dto.housework.IncompleteScoreResponse;
-import com.doittogether.platform.presentation.dto.housework.PersonalIncompleteScoreResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.doittogether.platform.presentation.dto.housework.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,12 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.doittogether.platform.domain.entity.Assignee.assignAssignee;
@@ -113,7 +99,7 @@ public class HouseworkServiceImpl implements HouseworkService {
         channelValidator.validateExistChannel(channelId);
         channelValidator.checkChannelParticipation(loginUser, channelId);
         final Slice<Housework> houseworks = houseworkRepository.findAllByChannelIdAndTargetDate(
-                channelId, loginUser.retrieveUserId(), pageable, targetDate);
+                channelId, loginUser.getUserId(), pageable, targetDate);
 
         return HouseworkSliceResponse.from(houseworks);
     }
@@ -156,7 +142,7 @@ public class HouseworkServiceImpl implements HouseworkService {
 
         try {
             final Assignee assignee = assigneeRepository.findByUserUserId(request.userId())
-                    .orElseGet(() -> assignAssignee(userRepository.findById(request.userId())
+                    .orElseGet(() -> Assignee.assignAssignee(userRepository.findById(request.userId())
                             .orElseThrow(() -> new HouseworkException(ExceptionCode.USER_NOT_FOUND))));
             final Assignee saveAssignee = assigneeRepository.saveAndFlush(assignee);
             final Housework housework = Housework.of(
@@ -220,6 +206,16 @@ public class HouseworkServiceImpl implements HouseworkService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Housework> monthlyHouseworkCheck(Long channelId, LocalDate targetDate){
+
+        final LocalDate firstDayOfMonth = targetDate.with(TemporalAdjusters.firstDayOfMonth()); // 1일
+        final LocalDate lastDayOfMonth = targetDate.with(TemporalAdjusters.lastDayOfMonth()); // 해당 달의 마지막 날
+
+        return houseworkRepository.findByChannelChannelIdAndStartDateBetween(channelId, firstDayOfMonth, lastDayOfMonth);
+    }
+
+    @Override
     public void deleteHousework(final User loginUser, final Long houseworkId, final Long channelId) {
         channelValidator.validateExistChannel(channelId);
         houseworkValidator.validateExistHousework(houseworkId);
@@ -233,7 +229,7 @@ public class HouseworkServiceImpl implements HouseworkService {
     }
 
     @Override
-    public IncompleteScoreResponse incompleteScoreResponse(User loginUser, Long channelId, LocalDate targetDate) {
+    public IncompleteScoreResponse houseworkIncompleteCountCheck(User loginUser, Long channelId, LocalDate targetDate){
         channelValidator.validateExistChannel(channelId);
         channelValidator.checkChannelParticipation(loginUser, channelId);
 
@@ -254,7 +250,7 @@ public class HouseworkServiceImpl implements HouseworkService {
 
         // 날짜별 집안일 그룹화
         Map<LocalDate, List<Housework>> groupedByDate = houseworkList.stream()
-                .collect(Collectors.groupingBy(Housework::retrieveStartDate));
+                .collect(Collectors.groupingBy(Housework::getStartDate));
 
         // 날짜 범위 내 모든 날짜 초기화
         List<PersonalIncompleteScoreResponse> houseworkCheckList = new ArrayList<>();
@@ -268,7 +264,7 @@ public class HouseworkServiceImpl implements HouseworkService {
 
             // 미진행 집안일 개수
             int incompletedTasks = (int) dailyHouseworks.stream()
-                    .filter(housework -> housework.retrieveStatus() == Status.UN_COMPLETE)
+                    .filter(housework -> housework.getStatus() == Status.UN_COMPLETE)
                     .count();
 
             // 상태 계산

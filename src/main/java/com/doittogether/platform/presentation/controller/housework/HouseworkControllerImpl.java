@@ -236,7 +236,7 @@ public class HouseworkControllerImpl implements
         return ResponseEntity.status(HttpStatus.OK).body(
                 SuccessResponse.onSuccess(
                         SuccessCode._OK,
-                        houseworkService.incompleteScoreResponse(loginUser, channelId, targetDate)
+                        houseworkService.houseworkIncompleteCountCheck(loginUser, channelId, targetDate)
                 ));
     }
 }

@@ -41,14 +41,6 @@ public class Channel extends BaseEntity {
         return channel;
     }
 
-    public Long retrieveChannelId() {
-        return channelId;
-    }
-
-    public String retrieveName() {
-        return name;
-    }
-
     public void updateName(String name) {
         this.name = name;
     }

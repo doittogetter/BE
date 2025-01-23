@@ -9,8 +9,8 @@ import com.doittogether.platform.domain.entity.Personality;
 import com.doittogether.platform.domain.entity.User;
 import com.doittogether.platform.domain.enumeration.PersonalityStatus;
 import com.doittogether.platform.infrastructure.persistence.personality.PersonalityRepository;
-import com.doittogether.platform.presentation.dto.personality.PersonalityRequestDto;
-import com.doittogether.platform.presentation.dto.personality.PersonalityResponseDTO;
+import com.doittogether.platform.presentation.dto.personality.PersonalityRequest;
+import com.doittogether.platform.presentation.dto.personality.PersonalityResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,6 +21,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class PersonalityServiceImpl implements PersonalityService {
@@ -29,9 +30,8 @@ public class PersonalityServiceImpl implements PersonalityService {
 
     private final PersonalityRepository personalityRepository;
 
-    @Transactional
     @Override
-    public PersonalityResponseDTO findKeywordsFromGPT(final User user, final PersonalityRequestDto request) {
+    public PersonalityResponse generateAndSavePersonalityKeywords(final User user, final PersonalityRequest request) {
         List<String> keywords = null;
         PersonalityStatus status = PersonalityStatus.VALID;
 
@@ -67,7 +67,7 @@ public class PersonalityServiceImpl implements PersonalityService {
         }
 
         savePersonalities(user, keywords, status);
-        return PersonalityResponseDTO.from(keywords);
+        return PersonalityResponse.from(keywords);
     }
 
     @Override
@@ -81,12 +81,13 @@ public class PersonalityServiceImpl implements PersonalityService {
     }
 
     @Override
-    public PersonalityResponseDTO getUserPersonalities(User user) {
+    @Transactional(readOnly = true)
+    public PersonalityResponse getUserPersonalities(User user) {
         List<String> keywords = personalityRepository.findByUser(user)
                 .stream()
                 .map(Personality::retrieveValue)
                 .collect(Collectors.toList());
 
-        return PersonalityResponseDTO.from(keywords);
+        return PersonalityResponse.from(keywords);
     }
 }
