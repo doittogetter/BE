@@ -18,6 +18,5 @@ public class ChatGPTResponse {
     public static class Choice {
         private int index;
         private Message message;
-
     }
 }

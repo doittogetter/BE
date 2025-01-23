@@ -39,7 +39,7 @@ public class AssignChoreChatGPTService {
 
         final Map<Long, List<String>> userPersonality = channelUsers.stream()
                 .collect(Collectors.toMap(
-                        User::retrieveUserId,
+                        User::getUserId,
                         user -> personalityRepository.findByUser(user)
                                 .stream()
                                 .map(Personality::retrieveValue)
@@ -58,7 +58,7 @@ public class AssignChoreChatGPTService {
         String assignProperHouswork = null;
         try {
             assignProperHouswork = TemplateUtil.replaceUserPersonalityWithJson(AssignChorePrompt.ASSIGN_CHORES_PROMPT,
-                    userPersonality, housework.map(Housework::retrieveTask)
+                    userPersonality, housework.map(Housework::getTask)
                             .orElseThrow(() -> new RuntimeException("Housework is not present")));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
