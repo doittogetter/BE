@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,20 +34,25 @@ public class AssignChoreChatGPTService {
     @Value("${openai.api.url}")
     private String apiURL;
 
-    public Map<Long, List<Personality>> findUserPersonality(final HouseworkUserRequest channelUserRequest) {
-        final List<User> channelUsers = userRepository.findByUserChannelsUserChannelId(channelUserRequest.userChannelId());
-        final Map<Long, List<Personality>> userPersonality = channelUsers.stream()
+    public Map<Long, List<String>> findUserPersonality(final HouseworkUserRequest channelUserRequest) {
+        final List<User> channelUsers = userRepository.findByChannelId(channelUserRequest.channelId());
+
+        final Map<Long, List<String>> userPersonality = channelUsers.stream()
                 .collect(Collectors.toMap(
                         User::retrieveUserId,
-                        personalityRepository::findByUser
+                        user -> personalityRepository.findByUser(user)
+                                .stream()
+                                .map(Personality::retrieveValue)
+                                .collect(Collectors.toList())
                 ));
 
         return userPersonality;
     }
 
+    //userchannelId, houseworkId, nameOfHousework
     public AssignChoreChatGPTResponse chat(final HouseworkUserRequest channelUserRequest) {
-        Map<Long, List<Personality>> userPersonality = findUserPersonality(channelUserRequest);
-        Optional<Housework> housework = houseworkRepository.findByChannelChannelIdAndHouseworkId(channelUserRequest.userChannelId(),
+        final Map<Long, List<String>> userPersonality = findUserPersonality(channelUserRequest);
+        final Optional<Housework> housework = houseworkRepository.findByChannelChannelIdAndHouseworkId(channelUserRequest.channelId(),
                 channelUserRequest.houseworkId());
 
         String assignProperHouswork = null;
