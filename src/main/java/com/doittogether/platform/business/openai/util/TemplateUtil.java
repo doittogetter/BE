@@ -37,9 +37,9 @@ public class TemplateUtil {
 
     public static String replaceUserPersonalityWithJson(String template, Map<Long,List<String>> personalityText,String housework) throws JsonProcessingException {
         try {
-            String jsonArray = objectMapper.writeValueAsString(personalityText);
+            String json = objectMapper.writeValueAsString(personalityText);
 
-            return template.replace("${users_personality_text}", jsonArray)
+            return template.replace("${users_personality_text}", json)
                     .replace("${housework}",housework);
         } catch (JsonProcessingException e) {
             log.error(e.getMessage(), e);
