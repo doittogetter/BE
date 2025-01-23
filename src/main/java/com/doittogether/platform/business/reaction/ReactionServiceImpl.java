@@ -3,6 +3,7 @@ package com.doittogether.platform.business.reaction;
 import com.doittogether.platform.application.global.code.ExceptionCode;
 import com.doittogether.platform.application.global.exception.reaction.ReactionException;
 import com.doittogether.platform.business.channel.ChannelValidator;
+import com.doittogether.platform.business.fcm.FcmService;
 import com.doittogether.platform.domain.entity.Channel;
 import com.doittogether.platform.domain.entity.Reaction;
 import com.doittogether.platform.domain.entity.User;
@@ -14,16 +15,17 @@ import com.doittogether.platform.presentation.dto.reaction.ReactionRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ReactionServiceImpl implements ReactionService {
 
@@ -31,6 +33,8 @@ public class ReactionServiceImpl implements ReactionService {
     private final ChannelRepository channelRepository;
     private final ReactionRepository reactionRepository;
     private final ChannelValidator channelValidator;
+
+    private final FcmService fcmService;
 
     @Override
     public void react(User user, Long channelId, ReactionRequest request, ReactionType reactionType) {
@@ -52,9 +56,11 @@ public class ReactionServiceImpl implements ReactionService {
         );
 
         reactionRepository.save(reaction);
+        fcmService.sendNotification(user, request);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Map<String, Integer> calculateReactionStatisticsForWeek(Long channelId, LocalDate targetDate) {
         LocalDate startOfWeek = targetDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)); // 일 부터
         LocalDate endOfWeek = targetDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)); // 토 까지
@@ -72,6 +78,7 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Map<String, Object> calculateReactionsStatisticsMVPForMonthly(Long channelId, LocalDate targetDate) {
         Map<String, Object> statistics = new HashMap<>();
         LocalDate startDate = targetDate.withDayOfMonth(1);
