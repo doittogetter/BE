@@ -5,9 +5,9 @@ import com.doittogether.platform.domain.entity.UserChannel;
 
 public record HouseworkUserResponse(
     Long userId,
-    String assignee
+    String housework
 ) {
-    public static HouseworkUserResponse of(Long userId,String assignee){
-        return new HouseworkUserResponse(userId,assignee);
+    public static HouseworkUserResponse of(Long userId,String housework){
+        return new HouseworkUserResponse(userId,housework);
     }
 }

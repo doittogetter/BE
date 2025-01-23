@@ -4,11 +4,10 @@ import lombok.Builder;
 
 @Builder
 public record HouseworkUserRequest(
-        Long userChannelId,
-        Long houseworkId,
-        String nameOfHousework
+        Long channelId,
+        Long houseworkId
 ) {
-    public static HouseworkUserRequest of(Long userChannelId, Long houseworkId, String nameOfHousework){
-        return new HouseworkUserRequest(userChannelId,houseworkId,nameOfHousework);
+    public static HouseworkUserRequest of(Long channelId, Long houseworkId){
+        return new HouseworkUserRequest(channelId,houseworkId);
     }
 }
