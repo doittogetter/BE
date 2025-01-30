@@ -14,8 +14,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,8 +59,7 @@ public class Housework extends BaseEntity {
     @JoinColumn(name = "channel_id")
     private Channel channel;
 
-    public static Housework of(LocalDate startDate, LocalTime startTime, String task, HouseworkCategory category, Assignee assignee,
-                               Channel channel) {
+    public static Housework of(LocalDate startDate, LocalTime startTime, String task, HouseworkCategory category, Assignee assignee, Channel channel) {
         final Housework housework = new Housework();
         housework.startDate = startDate;
         housework.startTime = startTime;
@@ -87,8 +88,8 @@ public class Housework extends BaseEntity {
         this.status = Status.UN_COMPLETE;
     }
 
-    public void updateAssignee(Assignee assignee){
-        this.assignee=assignee;
+    public void updateAssignee(Assignee assignee) {
+        this.assignee = assignee;
     }
 
     public boolean isAllDay() {

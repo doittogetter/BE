@@ -1,5 +1,7 @@
 package com.doittogether.platform.business.openai;
 
+import com.doittogether.platform.application.global.code.ExceptionCode;
+import com.doittogether.platform.application.global.exception.housework.HouseworkException;
 import com.doittogether.platform.business.openai.dto.AssignChoreChatGPTRequest;
 import com.doittogether.platform.business.openai.dto.AssignChoreChatGPTResponse;
 import com.doittogether.platform.business.openai.util.TemplateUtil;
@@ -61,7 +63,7 @@ public class AssignChoreChatGPTService {
                     userPersonality, housework.map(Housework::getTask)
                             .orElseThrow(() -> new RuntimeException("Housework is not present")));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            throw new HouseworkException(ExceptionCode.HOUSEWORK_NOT_FOUND);
         }
 
         AssignChoreChatGPTRequest question = new AssignChoreChatGPTRequest(model, assignProperHouswork);

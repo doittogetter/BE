@@ -82,8 +82,7 @@ public class HouseworkServiceImpl implements HouseworkService {
         Housework housework = houseworkRepository.findByChannelChannelIdAndHouseworkId(
                 request.channelId(),
                 request.houseworkId()
-        ).orElseThrow(() -> new RuntimeException("Housework not found for channelId: " + request.channelId()
-                + ", houseworkId: " + request.houseworkId()));
+        ).orElseThrow(() ->  new HouseworkException(ExceptionCode.HOUSEWORK_NOT_FOUND));
 
         User newAssignee = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found for userId: " + userId));

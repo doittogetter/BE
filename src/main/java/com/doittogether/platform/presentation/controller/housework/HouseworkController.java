@@ -76,7 +76,7 @@ public interface HouseworkController {
                                                        @PathVariable("channelId") Long channelId,
                                                        @RequestBody HouseworkRequest request);
 
-    @GetMapping("/uhyun")
+    @GetMapping("/assignHouseworkAi")
     @Operation(summary = "담당자 자동 조회", description = "AI를 이용한 자동 담당자 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
