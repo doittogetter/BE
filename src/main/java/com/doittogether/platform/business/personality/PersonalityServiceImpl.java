@@ -2,7 +2,7 @@ package com.doittogether.platform.business.personality;
 
 import com.doittogether.platform.application.global.code.ExceptionCode;
 import com.doittogether.platform.application.global.exception.personality.PersonalityException;
-import com.doittogether.platform.business.openai.ChatGPTService;
+import com.doittogether.platform.business.openai.KeyWordChatGPTService;
 import com.doittogether.platform.business.openai.dto.ChatGPTResponse;
 import com.doittogether.platform.business.openai.util.TemplateUtil;
 import com.doittogether.platform.domain.entity.Personality;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PersonalityServiceImpl implements PersonalityService {
 
-    private final ChatGPTService chatGPTService;
+    private final KeyWordChatGPTService keyWordChatGPTService;
 
     private final PersonalityRepository personalityRepository;
 
@@ -36,7 +36,7 @@ public class PersonalityServiceImpl implements PersonalityService {
         PersonalityStatus status = PersonalityStatus.VALID;
 
         try {
-            ChatGPTResponse chatGPTResponse = chatGPTService.chat(request);
+            ChatGPTResponse chatGPTResponse = keyWordChatGPTService.chat(request);
             String jsonResponse = chatGPTResponse.getChoices().get(0).getMessage().getContent();
 
             keywords = TemplateUtil.mapJsonToKeywords(jsonResponse); // gpt 가 추천해주는 키워드

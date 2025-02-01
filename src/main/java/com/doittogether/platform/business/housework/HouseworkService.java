@@ -2,10 +2,7 @@ package com.doittogether.platform.business.housework;
 
 import com.doittogether.platform.domain.entity.Housework;
 import com.doittogether.platform.domain.entity.User;
-import com.doittogether.platform.presentation.dto.housework.HouseworkRequest;
-import com.doittogether.platform.presentation.dto.housework.HouseworkResponse;
-import com.doittogether.platform.presentation.dto.housework.HouseworkSliceResponse;
-import com.doittogether.platform.presentation.dto.housework.IncompleteScoreResponse;
+import com.doittogether.platform.presentation.dto.housework.*;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
@@ -21,6 +18,10 @@ public interface HouseworkService {
                                                                         final LocalDate targetDate,
                                                                         final Long assigneeId,
                                                                         final Pageable pageable);
+
+    HouseworkUserResponse assignHouseworkFromGPT(final HouseworkUserRequest request);
+
+    void saveAssignee(final Long userId,final HouseworkUserRequest request);
 
     void addHousework(final User loginUser, final Long channelId, final HouseworkRequest request);
 

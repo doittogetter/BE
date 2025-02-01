@@ -1,6 +1,7 @@
 package com.doittogether.platform.business.openai.util;
 
 import com.doittogether.platform.application.global.exception.personality.PersonalityException;
+import com.doittogether.platform.domain.entity.Personality;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,18 @@ public class TemplateUtil {
             return objectMapper.readValue(jsonString, new TypeReference<Map<String, List<String>>>() {})
                     .get("keywords");
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    public static String replaceUserPersonalityWithJson(String template, Map<Long,List<String>> personalityText,String housework) throws JsonProcessingException {
+        try {
+            String json = objectMapper.writeValueAsString(personalityText);
+
+            return template.replace("${users_personality_text}", json)
+                    .replace("${housework}",housework);
+        } catch (JsonProcessingException e) {
             log.error(e.getMessage(), e);
             throw e;
         }

@@ -5,6 +5,8 @@ import com.doittogether.platform.application.global.response.SuccessResponse;
 import com.doittogether.platform.presentation.dto.housework.HouseworkRequest;
 import com.doittogether.platform.presentation.dto.housework.HouseworkResponse;
 import com.doittogether.platform.presentation.dto.housework.HouseworkSliceResponse;
+import com.doittogether.platform.presentation.dto.housework.HouseworkUserRequest;
+import com.doittogether.platform.presentation.dto.housework.HouseworkUserResponse;
 import com.doittogether.platform.presentation.dto.housework.IncompleteScoreResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,7 +17,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -66,6 +75,14 @@ public interface HouseworkController {
     ResponseEntity<SuccessResponse<Void>> addHousework(Principal principal,
                                                        @PathVariable("channelId") Long channelId,
                                                        @RequestBody HouseworkRequest request);
+
+    @GetMapping("/assignHouseworkAi")
+    @Operation(summary = "담당자 자동 조회", description = "AI를 이용한 자동 담당자 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    ResponseEntity<SuccessResponse<HouseworkUserResponse>> findAssignee(@PathVariable("channelId") Long channelId,
+                                                                        @RequestBody HouseworkUserRequest request);
 
     @PutMapping("/{houseworkId}")
     @Operation(summary = "집안일 수정", description = "기존 집안일의 카테고리, 작업, 담당자를 수정합니다.")

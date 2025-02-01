@@ -4,6 +4,8 @@ import com.doittogether.platform.application.global.code.ExceptionCode;
 import com.doittogether.platform.application.global.exception.housework.HouseworkException;
 import com.doittogether.platform.application.global.exception.statistics.StatisticsException;
 import com.doittogether.platform.business.channel.ChannelValidator;
+import com.doittogether.platform.business.openai.AssignChoreChatGPTService;
+import com.doittogether.platform.business.openai.dto.AssignChoreChatGPTResponse;
 import com.doittogether.platform.domain.entity.Assignee;
 import com.doittogether.platform.domain.entity.Channel;
 import com.doittogether.platform.domain.entity.Housework;
@@ -14,8 +16,10 @@ import com.doittogether.platform.infrastructure.persistence.housework.AssigneeRe
 import com.doittogether.platform.infrastructure.persistence.housework.HouseworkRepository;
 import com.doittogether.platform.infrastructure.persistence.user.UserRepository;
 import com.doittogether.platform.presentation.dto.housework.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -27,8 +31,11 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.doittogether.platform.domain.entity.Assignee.assignAssignee;
+
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class HouseworkServiceImpl implements HouseworkService {
 
@@ -38,6 +45,52 @@ public class HouseworkServiceImpl implements HouseworkService {
     private final HouseworkValidator houseworkValidator;
     private final ChannelValidator channelValidator;
     private final UserRepository userRepository;
+    private final AssignChoreChatGPTService assignChoreChatGPTService;
+
+    @Override
+    public HouseworkUserResponse assignHouseworkFromGPT(final HouseworkUserRequest request) {
+        Long userId = 0L;
+        String housework = null;
+
+        try {
+            AssignChoreChatGPTResponse assignChoreChatGPTResponse = assignChoreChatGPTService.chat(request);
+            String jsonResponse = assignChoreChatGPTResponse.getChoices().get(0).getMessage().getContent();
+
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> responseMap = objectMapper.readValue(jsonResponse, Map.class);
+
+            userId = Long.valueOf(responseMap.get("UserId").toString());
+            housework = responseMap.get("Housework").toString();
+        } catch (Exception e) {
+            log.error("Unable to assign chore using AssignChoreChatGPTService. Exception: {}",
+                    e.getMessage(), e);
+        }
+
+        if (userId == 0L || housework == null) {
+            log.error("집안일 담당자가 정상적으로 담기지 않았습니다.");
+            throw new HouseworkException(ExceptionCode._INTERNAL_SERVER_ERROR);
+        }
+
+        saveAssignee(userId, request);
+        return HouseworkUserResponse.of(userId, housework);
+    }
+
+    @Override
+    public void saveAssignee(Long userId,
+                             final HouseworkUserRequest request) {
+        Housework housework = houseworkRepository.findByChannelChannelIdAndHouseworkId(
+                request.channelId(),
+                request.houseworkId()
+        ).orElseThrow(() ->  new HouseworkException(ExceptionCode.HOUSEWORK_NOT_FOUND));
+
+        User newAssignee = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found for userId: " + userId));
+
+        housework.updateAssignee(assignAssignee(newAssignee));
+
+        houseworkRepository.save(housework);
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -116,7 +169,7 @@ public class HouseworkServiceImpl implements HouseworkService {
         final Housework housework = entityManager.getReference(Housework.class, houseworkId);
         try {
             final Assignee assignee = assigneeRepository.findByUserUserId(request.userId())
-                    .orElseGet(() -> Assignee.assignAssignee(userRepository.findById(request.userId())
+                    .orElseGet(() -> assignAssignee(userRepository.findById(request.userId())
                             .orElseThrow(() -> new HouseworkException(ExceptionCode.USER_NOT_FOUND))));
             final Housework updateHousework = housework.update(request, assignee);
             houseworkRepository.save(updateHousework);

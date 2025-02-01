@@ -1,6 +1,6 @@
 package com.doittogether.platform.business.openai;
 
-public class Prompt {
+public class KeyWordPrompt {
     public static String PERSONALITY_PROMPT =
             """
             Below is a set of survey responses. 
@@ -44,5 +44,4 @@ public class Prompt {
             
             ### Output(Your Answer):
             """;
-
 }
