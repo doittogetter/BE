@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 
     // 소셜 id의 provider 위치 정보
     private static final int PROVIDER_INDEX = 0;
-  
+
     private final ChannelService channelService;
 
     private final UserRepository userRepository;
@@ -54,6 +54,22 @@ public class UserServiceImpl implements UserService {
     public String getProvider(String socialId) {
 
         String provider = socialId.split("_")[PROVIDER_INDEX];
+
+        System.out.println("provider = "+provider);
+
+        switch (provider) {
+            case "kakao":
+                provider = "카카오";
+                break;
+            case "naver":
+                provider = "네이버";
+                break;
+            case "google":
+                provider = "구글";
+                break;
+            default:
+                break;
+        }
 
         return provider;
     }
