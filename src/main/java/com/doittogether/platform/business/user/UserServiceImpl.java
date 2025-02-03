@@ -55,8 +55,6 @@ public class UserServiceImpl implements UserService {
 
         String provider = socialId.split("_")[PROVIDER_INDEX];
 
-        System.out.println("provider = "+provider);
-
         switch (provider) {
             case "kakao":
                 provider = "카카오";
