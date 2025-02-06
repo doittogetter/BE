@@ -62,11 +62,9 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long userId) {
         User user = findByIdOrThrow(userId);
 
-        List<UserChannel> userChannels = userChannelRepository.findAllByUser(user);
+        List<Long> channelIds = userChannelRepository.findChannelIdsByUser(user);
 
-        for (UserChannel userChannel : userChannels) {
-            channelService.leaveChannel(user, userChannel.getChannel().getChannelId());
-        }
+        channelService.leaveChannels(user, channelIds);
 
         userRepository.delete(user);
     }
