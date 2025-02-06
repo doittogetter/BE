@@ -290,7 +290,7 @@ public class ChannelServiceTest {
         when(userChannelRepository.findByUserAndChannel(mockUser, mockChannel))
                 .thenReturn(Optional.of(mockUserChannel));
 
-        channelService.leaveChannel(mockUser, 1L);
+        channelService.leaveChannels(mockUser, 1L);
 
         verify(userRepository, Mockito.times(1)).findByEmail(email);
         verify(channelRepository, Mockito.times(1)).findById(1L);
@@ -323,7 +323,7 @@ public class ChannelServiceTest {
         when(userChannelRepository.findByUserAndChannel(mockAdmin, mockChannel))
                 .thenReturn(Optional.of(mockAdminChannel));
 
-        channelService.leaveChannel(mockAdmin, 1L);
+        channelService.leaveChannels(mockAdmin, 1L);
 
         verify(channelRepository, times(1)).delete(mockChannel);
         verifyNoMoreInteractions(userRepository, channelRepository, userChannelRepository);
@@ -364,7 +364,7 @@ public class ChannelServiceTest {
         when(userChannelRepository.findFirstByChannelAndRoleNot(mockChannel, Role.ADMIN))
                 .thenReturn(Optional.of(mockUserChannel));
 
-        channelService.leaveChannel(mockAdmin, 1L);
+        channelService.leaveChannels(mockAdmin, 1L);
 
         verify(userChannelRepository, times(1)).delete(mockAdminChannel);
         verify(userChannelRepository, times(1)).findFirstByChannelAndRoleNot(mockChannel, Role.ADMIN);
