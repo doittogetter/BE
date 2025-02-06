@@ -24,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -180,9 +181,22 @@ public class ChannelServiceImpl implements ChannelService {
         return ChannelKickUserResponse.from(targetUser);
     }
 
-    @Transactional
     @Override
-    public void leaveChannel(User loginUser, Long channelId) {
+    @Transactional
+    public void leaveChannels(User loginUser, Long... channelIds) {
+        List<Long> channelIdList = Arrays.asList(channelIds);
+        leaveChannels(loginUser, channelIdList);
+    }
+
+    @Override
+    @Transactional
+    public void leaveChannels(User loginUser, List<Long> channelIds) {
+        for (Long channelId : channelIds) {
+            leaveChannel(loginUser, channelId);
+        }
+    }
+
+    private void leaveChannel(User loginUser, Long channelId) {
         User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
         Channel channel = channelRepository.findById(channelId)
@@ -210,14 +224,6 @@ public class ChannelServiceImpl implements ChannelService {
         }
 
         userChannelRepository.delete(userChannel);
-    }
-
-    @Override
-    @Transactional
-    public void leaveChannels(User loginUser, List<Long> channelIds) {
-        for (Long channelId : channelIds) {
-            leaveChannel(loginUser, channelId);
-        }
     }
 
     private Pageable resolveSort(Pageable pageable) {
