@@ -50,4 +50,20 @@ public class PersonalityController {
                 .body(SuccessResponse.onSuccess(SuccessCode._OK,
                         personalityService.getUserPersonalities(loginUser)));
     }
+
+    @GetMapping("/{targetUserId}")
+    @Operation(summary = "특정 사용자 성향 조회",
+            description = "특정 사용자의 성향 정보를 조회합니다.")
+    public ResponseEntity<SuccessResponse<PersonalityResponse>> getUserPersonalitiesByUserId(
+            Principal principal,
+            @PathVariable Long targetUserId) {
+        Long userId = Long.parseLong(principal.getName());
+        userService.findByIdOrThrow(userId);
+
+        User targetUser = userService.findByTargetIdOrThrow(targetUserId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponse.onSuccess(SuccessCode._OK,
+                        personalityService.getUserPersonalities(targetUser)));
+    }
 }

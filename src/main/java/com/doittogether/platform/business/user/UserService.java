@@ -6,6 +6,7 @@ import com.doittogether.platform.presentation.dto.user.response.UserUpdateRespon
 
 public interface UserService {
     User findByIdOrThrow(Long id);
+    User findByTargetIdOrThrow(Long id);
 
     boolean hasCompletedSetup(User user);
 

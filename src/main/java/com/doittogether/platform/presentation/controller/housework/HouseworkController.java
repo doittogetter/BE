@@ -76,13 +76,12 @@ public interface HouseworkController {
                                                        @PathVariable("channelId") Long channelId,
                                                        @RequestBody HouseworkRequest request);
 
-    @GetMapping("/assignHouseworkAi")
+    @PostMapping("/assignHouseworkAi")
     @Operation(summary = "담당자 자동 조회", description = "AI를 이용한 자동 담당자 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
-    ResponseEntity<SuccessResponse<HouseworkUserResponse>> findAssignee(@PathVariable("channelId") Long channelId,
-                                                                        @RequestBody HouseworkUserRequest request);
+    ResponseEntity<SuccessResponse<HouseworkUserResponse>> findAssignee(@RequestBody HouseworkUserRequest request);
 
     @PutMapping("/{houseworkId}")
     @Operation(summary = "집안일 수정", description = "기존 집안일의 카테고리, 작업, 담당자를 수정합니다.")
