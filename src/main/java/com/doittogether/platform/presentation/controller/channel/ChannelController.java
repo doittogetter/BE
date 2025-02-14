@@ -150,7 +150,7 @@ public class ChannelController {
         Long userId = Long.parseLong(principal.getName());
         User user = userService.findByIdOrThrow(userId);
 
-        channelService.leaveChannel(user, channelId);
+        channelService.leaveChannels(user, channelId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.onSuccess(SuccessCode._OK, null));

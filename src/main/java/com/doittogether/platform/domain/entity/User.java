@@ -50,6 +50,9 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = ALL)
     private FcmToken fcmToken;
 
+    @OneToOne(mappedBy = "user", cascade = ALL)
+    private Assignee assignee;
+
     public static User of(String nickName, String email, String socialId, ProfileImage profileImage) {
         User user = new User();
         user.nickName = nickName;

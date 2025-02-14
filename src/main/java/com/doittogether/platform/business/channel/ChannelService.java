@@ -6,6 +6,7 @@ import com.doittogether.platform.presentation.dto.channel.response.*;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface ChannelService {
 
@@ -16,5 +17,7 @@ public interface ChannelService {
     ChannelInviteLinkResponse generateInviteLink(Long channelId);
     ChannelJoinResponse joinChannelViaInviteLink(User loginUser, String request);
     ChannelKickUserResponse kickUserFromChannel(User loginUser, Long channelId, ChannelKickUserRequest request);
-    void leaveChannel(User loginUser, Long channelId);
+
+    void leaveChannels(User loginUser, Long... channelIds);
+    void leaveChannels(User loginUser, List<Long> channelIds);
 }
