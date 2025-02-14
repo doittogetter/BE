@@ -56,12 +56,13 @@ public class HouseworkServiceImpl implements HouseworkService {
             AssignChoreChatGPTResponse assignChoreChatGPTResponse = assignChoreChatGPTService.chat(request);
             String jsonResponse = assignChoreChatGPTResponse.getChoices().get(0).getMessage().getContent();
 
-
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> responseMap = objectMapper.readValue(jsonResponse, Map.class);
 
-            userId = Long.valueOf(responseMap.get("UserId").toString());
-            housework = responseMap.get("Housework").toString();
+            String firstKey = responseMap.keySet().iterator().next();
+            userId = Long.parseLong(firstKey);
+            housework = responseMap.get(firstKey).toString().replaceAll("\"", "");
+
         } catch (Exception e) {
             log.error("Unable to assign chore using AssignChoreChatGPTService. Exception: {}",
                     e.getMessage(), e);
