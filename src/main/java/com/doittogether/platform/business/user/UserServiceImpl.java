@@ -34,6 +34,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByTargetIdOrThrow(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserException(ExceptionCode.TARGET_USER_NOT_FOUND));
+    }
+
+    @Override
     public boolean hasCompletedSetup(User user) {
         return user.isSetup();
     }
