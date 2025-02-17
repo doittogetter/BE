@@ -54,14 +54,11 @@ public class AssignChoreChatGPTService {
     //userchannelId, houseworkId, nameOfHousework
     public AssignChoreChatGPTResponse chat(final HouseworkUserRequest channelUserRequest) {
         final Map<Long, List<String>> userPersonality = findUserPersonality(channelUserRequest);
-        final Optional<Housework> housework = houseworkRepository.findByChannelChannelIdAndHouseworkId(channelUserRequest.channelId(),
-                channelUserRequest.houseworkId());
 
         String assignProperHouswork = null;
         try {
             assignProperHouswork = TemplateUtil.replaceUserPersonalityWithJson(AssignChorePrompt.ASSIGN_CHORES_PROMPT,
-                    userPersonality, housework.map(Housework::getTask)
-                            .orElseThrow(() -> new RuntimeException("Housework is not present")));
+                    userPersonality, channelUserRequest.houseworkName());
         } catch (JsonProcessingException e) {
             throw new HouseworkException(ExceptionCode.HOUSEWORK_NOT_FOUND);
         }

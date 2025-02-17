@@ -5,9 +5,9 @@ import lombok.Builder;
 @Builder
 public record HouseworkUserRequest(
         Long channelId,
-        Long houseworkId
+        String houseworkName
 ) {
-    public static HouseworkUserRequest of(Long channelId, Long houseworkId){
-        return new HouseworkUserRequest(channelId,houseworkId);
+    public static HouseworkUserRequest of(Long channelId, String houseworkName){
+        return new HouseworkUserRequest(channelId,houseworkName);
     }
 }
