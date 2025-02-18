@@ -80,9 +80,9 @@ public class HouseworkServiceImpl implements HouseworkService {
     @Override
     public void saveAssignee(Long userId,
                              final HouseworkUserRequest request) {
-        Housework housework = houseworkRepository.findByChannelChannelIdAndHouseworkId(
+        Housework housework = houseworkRepository.findByChannelChannelIdAndTask(
                 request.channelId(),
-                request.houseworkId()
+                request.houseworkName()
         ).orElseThrow(() ->  new HouseworkException(ExceptionCode.HOUSEWORK_NOT_FOUND));
 
         User newAssignee = userRepository.findById(userId)

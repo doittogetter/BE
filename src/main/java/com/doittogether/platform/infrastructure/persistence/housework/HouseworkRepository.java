@@ -55,6 +55,8 @@ public interface HouseworkRepository extends JpaRepository<Housework, Long> {
 
     Optional<Housework> findByChannelChannelIdAndHouseworkId(Long channelId, Long houseworkId);
 
+    Optional<Housework> findByChannelChannelIdAndTask(Long channelId,String houseworkName);
+
     @Query("SELECT COUNT(h) FROM Housework h " +
             "WHERE h.channel.channelId = :channelId " +
             "AND h.status = :status " +
