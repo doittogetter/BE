@@ -23,7 +23,7 @@ public class Assignee {
     @GeneratedValue(strategy = IDENTITY)
     private Long assigneeId;
 
-    @OneToOne(cascade = ALL, fetch = LAZY)
+    @OneToOne(fetch = LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

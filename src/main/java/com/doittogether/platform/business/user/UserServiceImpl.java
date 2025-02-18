@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 
     // 소셜 id의 provider 위치 정보
     private static final int PROVIDER_INDEX = 0;
-  
+
     private final ChannelService channelService;
 
     private final UserRepository userRepository;
@@ -31,6 +31,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByIdOrThrow(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UserException(ExceptionCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    public User findByTargetIdOrThrow(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserException(ExceptionCode.TARGET_USER_NOT_FOUND));
     }
 
     @Override
@@ -55,6 +60,20 @@ public class UserServiceImpl implements UserService {
 
         String provider = socialId.split("_")[PROVIDER_INDEX];
 
+        switch (provider) {
+            case "kakao":
+                provider = "카카오";
+                break;
+            case "naver":
+                provider = "네이버";
+                break;
+            case "google":
+                provider = "구글";
+                break;
+            default:
+                break;
+        }
+
         return provider;
     }
 
@@ -62,11 +81,9 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long userId) {
         User user = findByIdOrThrow(userId);
 
-        List<UserChannel> userChannels = userChannelRepository.findAllByUser(user);
+        List<Long> channelIds = userChannelRepository.findChannelIdsByUser(user);
 
-        for (UserChannel userChannel : userChannels) {
-            channelService.leaveChannel(user, userChannel.getChannel().getChannelId());
-        }
+        channelService.leaveChannels(user, channelIds);
 
         userRepository.delete(user);
     }

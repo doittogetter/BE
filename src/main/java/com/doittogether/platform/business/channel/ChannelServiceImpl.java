@@ -24,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -180,9 +181,22 @@ public class ChannelServiceImpl implements ChannelService {
         return ChannelKickUserResponse.from(targetUser);
     }
 
-    @Transactional
     @Override
-    public void leaveChannel(User loginUser, Long channelId) {
+    @Transactional
+    public void leaveChannels(User loginUser, Long... channelIds) {
+        List<Long> channelIdList = Arrays.asList(channelIds);
+        leaveChannels(loginUser, channelIdList);
+    }
+
+    @Override
+    @Transactional
+    public void leaveChannels(User loginUser, List<Long> channelIds) {
+        for (Long channelId : channelIds) {
+            leaveChannel(loginUser, channelId);
+        }
+    }
+
+    private void leaveChannel(User loginUser, Long channelId) {
         User user = userRepository.findById(loginUser.getUserId())
                 .orElseThrow(() -> new ChannelException(ExceptionCode.USER_NOT_FOUND));
         Channel channel = channelRepository.findById(channelId)
@@ -196,13 +210,7 @@ public class ChannelServiceImpl implements ChannelService {
 
         // 나가는 사용자의 집안일 연관 삭제
         assigneeRepository.findByUserUserId(user.getUserId())
-                .ifPresent(assignee -> {
-                    // Assignee 와 관련된 집안일들 삭제
-                    houseworkRepository.deleteByAssigneeId(assignee.retrieveAssigneeId());
-
-                    // Assignee 자체 삭제
-                    assigneeRepository.delete(assignee);
-                });
+                .ifPresent(assignee -> houseworkRepository.deleteByAssigneeId(assignee.retrieveAssigneeId()));
 
         if (userChannel.isRoleAdmin()) { // 관리자 이라면,
             if (channel.getUserChannels().size() == 1) { // 방에 관리자가 혼자 남은 경우
