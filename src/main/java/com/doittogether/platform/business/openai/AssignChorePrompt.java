@@ -15,15 +15,17 @@ public class AssignChorePrompt {
                 5. Verify that the selected person meets the task requirements.
                 6. Make sure to select only one person.
                 7. If the process is repeated with the same input, exclude the previously selected person.
+                8. Housework is not determined by you; it is set based on the input value.
+                9. Follow the output format exactly, including correct capitalization.
                 
                 ### Desired Output Format:
-                1. [UserId] [Housework]
+                1. [UserId]
                 
                 ### Example:
                 UserId: 1
-                Houswork: 화장실 청소 
+                housework: "화장실 청소"
                 UserId: 2
-                Houswork: 거실 쓸기
+                housework: "거실 쓸기"
                             
                 ### Input:
                 {users_personality_text} this gonna be json. like
@@ -32,19 +34,19 @@ public class AssignChorePrompt {
                 }
                             
                 ### Output:
-                Extracted userid and housework in the desired format to json. like
-                {
-                    UserId : Housework
-                }
+                Extracted userid and housework in the desired format to json.
+                housework must be String
                 
                 ### input:
                 {
-                ${users_personality_text}
+                  "users_personality_text"=${users_personality_text}
                 }
+                
                 
                 ### Output:
                 {
-                (your answer) : ${housework}
+                    UserId : (your answer)
+                    housework : ${housework}
                 }
     """;
 }

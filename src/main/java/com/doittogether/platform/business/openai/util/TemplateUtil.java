@@ -42,7 +42,7 @@ public class TemplateUtil {
             return template.replace("${users_personality_text}", json)
                     .replace("${housework}",housework);
         } catch (JsonProcessingException e) {
-            log.error(e.getMessage(), e);
+            log.error("Unable to make templete. Exception: {}",e.getMessage(),e);
             throw e;
         }
     }
