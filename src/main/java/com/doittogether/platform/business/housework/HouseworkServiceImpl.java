@@ -49,7 +49,7 @@ public class HouseworkServiceImpl implements HouseworkService {
 
     @Override
     public HouseworkUserResponse assignHouseworkFromGPT(final HouseworkUserRequest request) {
-        Long userId = 0L;
+        Long userId = null;
         String housework = null;
 
         try {
@@ -59,10 +59,11 @@ public class HouseworkServiceImpl implements HouseworkService {
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> responseMap = objectMapper.readValue(jsonResponse, Map.class);
 
-            String firstKey = responseMap.keySet().iterator().next();
-            userId = Long.parseLong(firstKey);
-            housework = responseMap.get(firstKey).toString().replaceAll("\"", "");
-
+            Object userIdObj = responseMap.get("UserId");
+            if (userIdObj instanceof Number) {
+                userId = ((Number) userIdObj).longValue();
+            }
+            housework = (String) responseMap.get("housework");
         } catch (Exception e) {
             log.error("Unable to assign chore using AssignChoreChatGPTService. Exception: {}",
                     e.getMessage(), e);
