@@ -22,10 +22,10 @@ public class AssignChorePrompt {
                 1. [UserId]
                 
                 ### Example:
-                UserId: 1
-                housework: "화장실 청소"
-                UserId: 2
-                housework: "거실 쓸기"
+                "UserId": 1
+                "housework": "화장실 청소"
+                "UserId": 2
+                "housework": "거실 쓸기"
                             
                 ### Input:
                 {users_personality_text} this gonna be json. like
@@ -45,8 +45,8 @@ public class AssignChorePrompt {
                 
                 ### Output:
                 {
-                    UserId : (your answer)
-                    housework : ${housework}
+                    "UserId" : (your answer)
+                    "housework" : ${housework}
                 }
     """;
 }
