@@ -4,6 +4,8 @@ import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 import com.doittogether.platform.domain.enumeration.HouseworkCategory;
+import com.doittogether.platform.domain.enumeration.HouseworkStatus;
+import com.doittogether.platform.domain.enumeration.PersonalityStatus;
 import com.doittogether.platform.domain.enumeration.Status;
 import com.doittogether.platform.presentation.dto.housework.HouseworkRequest;
 import jakarta.persistence.Column;
@@ -59,6 +61,10 @@ public class Housework extends BaseEntity {
     @JoinColumn(name = "channel_id")
     private Channel channel;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private HouseworkStatus assigneeStatus;
+
     public static Housework of(LocalDate startDate, LocalTime startTime, String task, HouseworkCategory category, Assignee assignee, Channel channel) {
         final Housework housework = new Housework();
         housework.startDate = startDate;
@@ -88,8 +94,9 @@ public class Housework extends BaseEntity {
         this.status = Status.UN_COMPLETE;
     }
 
-    public void updateAssignee(Assignee assignee) {
+    public void updateAssignee(Assignee assignee,HouseworkStatus assigneeStatus) {
         this.assignee = assignee;
+        this.assigneeStatus = assigneeStatus;
     }
 
     public boolean isAllDay() {

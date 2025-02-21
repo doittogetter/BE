@@ -22,10 +22,10 @@ public class AssignChorePrompt {
                 1. [UserId]
                 
                 ### Example:
-                "UserId": 1
-                "housework": "화장실 청소"
-                "UserId": 2
-                "housework": "거실 쓸기"
+                "userId": 1
+                
+                "userId": 2
+                
                             
                 ### Input:
                 {users_personality_text} this gonna be json. like
@@ -34,19 +34,18 @@ public class AssignChorePrompt {
                 }
                             
                 ### Output:
-                Extracted userid and housework in the desired format to json.
-                housework must be String
+                Extracted userId in the desired format to json.
                 
                 ### input:
                 {
                   "users_personality_text"=${users_personality_text}
+                  "housework"=${housework}
                 }
                 
                 
                 ### Output:
                 {
-                    "UserId" : (your answer)
-                    "housework" : ${housework}
+                    "userId" : (your answer)
                 }
     """;
 }
