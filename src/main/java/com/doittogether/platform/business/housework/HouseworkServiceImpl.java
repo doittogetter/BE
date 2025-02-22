@@ -11,7 +11,7 @@ import com.doittogether.platform.domain.entity.Channel;
 import com.doittogether.platform.domain.entity.Housework;
 import com.doittogether.platform.domain.entity.User;
 import com.doittogether.platform.domain.enumeration.HouseworkCategory;
-import com.doittogether.platform.domain.enumeration.HouseworkStatus;
+import com.doittogether.platform.domain.enumeration.AssigneeStatus;
 import com.doittogether.platform.domain.enumeration.Status;
 import com.doittogether.platform.infrastructure.persistence.housework.AssigneeRepository;
 import com.doittogether.platform.infrastructure.persistence.housework.HouseworkRepository;
@@ -50,8 +50,9 @@ public class HouseworkServiceImpl implements HouseworkService {
 
     @Override
     public HouseworkUserResponse assignHouseworkFromGPT(final HouseworkUserRequest request) {
+
         Long userId = 0L;
-        HouseworkStatus status = HouseworkStatus.VALID;
+        AssigneeStatus status = AssigneeStatus.VALID;
 
         try {
             AssignChoreChatGPTResponse assignChoreChatGPTResponse = assignChoreChatGPTService.chat(request);
@@ -69,7 +70,7 @@ public class HouseworkServiceImpl implements HouseworkService {
             log.error("Json 처리중 오류 발생 임시데이터로 처리합니다. Exception: {}",
                     e.getMessage(), e);
 
-            status = HouseworkStatus.INVALID;
+            status = AssigneeStatus.INVALID;
 
             final List<User> channelUsers = userRepository.findByChannelId(request.channelId());
 
@@ -85,11 +86,11 @@ public class HouseworkServiceImpl implements HouseworkService {
         }
 
         saveAssignee(userId, status);
-        return HouseworkUserResponse.of(userId, request.houseworkName());
+        return HouseworkUserResponse.of(userId, request.houseworkName(),status);
     }
 
     @Override
-    public void saveAssignee(final Long userId, final HouseworkStatus houseworkStatus) {
+    public void saveAssignee(final Long userId, final AssigneeStatus houseworkStatus) {
         User newAssignee = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found for userId: " + userId));
 
@@ -97,12 +98,12 @@ public class HouseworkServiceImpl implements HouseworkService {
 
         if (existingAssignee.isPresent()) {
             Assignee assignee = existingAssignee.get();
-            assignee.setHouseworkStatus(houseworkStatus);
             assignee.setUser(newAssignee);
         } else {
-            Assignee assignee = Assignee.of(userId,newAssignee,houseworkStatus);
+            Assignee assignee = Assignee.of(userId,newAssignee);
             assigneeRepository.save(assignee);
         }
+
     }
 
     @Override
@@ -160,12 +161,14 @@ public class HouseworkServiceImpl implements HouseworkService {
                     .orElseGet(() -> Assignee.assignAssignee(userRepository.findById(request.userId())
                             .orElseThrow(() -> new HouseworkException(ExceptionCode.USER_NOT_FOUND))));
             final Assignee saveAssignee = assigneeRepository.saveAndFlush(assignee);
+
             final Housework housework = Housework.of(
                     request.startDate(),
                     request.startTime(),
                     request.task(),
                     HouseworkCategory.parse(request.category()),
                     saveAssignee,
+                    request.status(),
                     channel);
             houseworkRepository.save(housework);
         } catch (IllegalArgumentException exception) {
