@@ -61,9 +61,7 @@ public class Housework extends BaseEntity {
     @JoinColumn(name = "channel_id")
     private Channel channel;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private HouseworkStatus assigneeStatus;
+
 
     public static Housework of(LocalDate startDate, LocalTime startTime, String task, HouseworkCategory category, Assignee assignee, Channel channel) {
         final Housework housework = new Housework();
@@ -92,11 +90,6 @@ public class Housework extends BaseEntity {
             return;
         }
         this.status = Status.UN_COMPLETE;
-    }
-
-    public void updateAssignee(Assignee assignee,HouseworkStatus assigneeStatus) {
-        this.assignee = assignee;
-        this.assigneeStatus = assigneeStatus;
     }
 
     public boolean isAllDay() {

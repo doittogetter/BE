@@ -84,36 +84,25 @@ public class HouseworkServiceImpl implements HouseworkService {
             throw new HouseworkException(ExceptionCode._INTERNAL_SERVER_ERROR);
         }
 
-        saveAssignee(userId, request, status);
+        saveAssignee(userId, status);
         return HouseworkUserResponse.of(userId, request.houseworkName());
     }
 
     @Override
-    public void saveAssignee(final Long userId,
-                             final HouseworkUserRequest request, final HouseworkStatus assigneeStatus) {
-        Housework housework = houseworkRepository.findByChannelChannelIdAndTask(
-                request.channelId(),
-                request.houseworkName()
-        ).orElseThrow(() ->  new HouseworkException(ExceptionCode.HOUSEWORK_NOT_FOUND));
-
+    public void saveAssignee(final Long userId, final HouseworkStatus houseworkStatus) {
         User newAssignee = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found for userId: " + userId));
 
         Optional<Assignee> existingAssignee = assigneeRepository.findByUserUserId(userId);
 
-        Assignee assignee;
-        if(existingAssignee.isPresent()){
-            assignee = existingAssignee.get();
+        if (existingAssignee.isPresent()) {
+            Assignee assignee = existingAssignee.get();
+            assignee.setHouseworkStatus(houseworkStatus);
             assignee.setUser(newAssignee);
         } else {
-            assignee=assignAssignee(newAssignee);
+            Assignee assignee = Assignee.of(userId,newAssignee,houseworkStatus);
+            assigneeRepository.save(assignee);
         }
-
-        assigneeRepository.save(assignee);
-
-        housework.updateAssignee(assignee,assigneeStatus);
-
-        houseworkRepository.save(housework);
     }
 
     @Override

@@ -22,7 +22,7 @@ public interface HouseworkService {
 
     HouseworkUserResponse assignHouseworkFromGPT(final HouseworkUserRequest request);
 
-    void saveAssignee(final Long userId,final HouseworkUserRequest request, final HouseworkStatus assigneeStatus);
+    void saveAssignee(final Long userId, final HouseworkStatus assigneeStatus);
 
     void addHousework(final User loginUser, final Long channelId, final HouseworkRequest request);
 
