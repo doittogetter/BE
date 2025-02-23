@@ -1,6 +1,5 @@
 package com.doittogether.platform.domain.entity;
 
-import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -26,6 +25,13 @@ public class Assignee {
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public static Assignee of(Long assigneeId, User user){
+        final Assignee assignee=new Assignee();
+        assignee.assigneeId= assigneeId;
+        assignee.user = user;
+        return assignee;
+    }
 
     public static Assignee assignAssignee(User user){
         final Assignee assignee = new Assignee();

@@ -11,6 +11,7 @@ import com.doittogether.platform.domain.entity.Channel;
 import com.doittogether.platform.domain.entity.Housework;
 import com.doittogether.platform.domain.entity.User;
 import com.doittogether.platform.domain.enumeration.HouseworkCategory;
+import com.doittogether.platform.domain.enumeration.AssigneeStatus;
 import com.doittogether.platform.domain.enumeration.Status;
 import com.doittogether.platform.infrastructure.persistence.housework.AssigneeRepository;
 import com.doittogether.platform.infrastructure.persistence.housework.HouseworkRepository;
@@ -49,8 +50,9 @@ public class HouseworkServiceImpl implements HouseworkService {
 
     @Override
     public HouseworkUserResponse assignHouseworkFromGPT(final HouseworkUserRequest request) {
-        Long userId = null;
-        String housework = null;
+
+        Long userId = 0L;
+        AssigneeStatus status = AssigneeStatus.VALID;
 
         try {
             AssignChoreChatGPTResponse assignChoreChatGPTResponse = assignChoreChatGPTService.chat(request);
@@ -59,39 +61,49 @@ public class HouseworkServiceImpl implements HouseworkService {
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> responseMap = objectMapper.readValue(jsonResponse, Map.class);
 
-            Object userIdObj = responseMap.get("UserId");
+            Object userIdObj = responseMap.get("userId");
             if (userIdObj instanceof Number) {
                 userId = ((Number) userIdObj).longValue();
             }
-            housework = (String) responseMap.get("housework");
+
         } catch (Exception e) {
-            log.error("Unable to assign chore using AssignChoreChatGPTService. Exception: {}",
+            log.error("Json 처리중 오류 발생 임시데이터로 처리합니다. Exception: {}",
                     e.getMessage(), e);
+
+            status = AssigneeStatus.INVALID;
+
+            final List<User> channelUsers = userRepository.findByChannelId(request.channelId());
+
+            Random random = new Random();
+            int randomValue = random.nextInt(channelUsers.size());
+
+            userId=channelUsers.get(randomValue).getUserId();
         }
 
-        if (userId == 0L || housework == null) {
+        if (userId == 0L) {
             log.error("집안일 담당자가 정상적으로 담기지 않았습니다.");
             throw new HouseworkException(ExceptionCode._INTERNAL_SERVER_ERROR);
         }
 
-        saveAssignee(userId, request);
-        return HouseworkUserResponse.of(userId, housework);
+        saveAssignee(userId, status);
+        return HouseworkUserResponse.of(userId, request.houseworkName(),status);
     }
 
     @Override
-    public void saveAssignee(Long userId,
-                             final HouseworkUserRequest request) {
-        Housework housework = houseworkRepository.findByChannelChannelIdAndTask(
-                request.channelId(),
-                request.houseworkName()
-        ).orElseThrow(() ->  new HouseworkException(ExceptionCode.HOUSEWORK_NOT_FOUND));
-
+    public void saveAssignee(final Long userId, final AssigneeStatus houseworkStatus) {
         User newAssignee = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found for userId: " + userId));
 
-        housework.updateAssignee(assignAssignee(newAssignee));
+        Optional<Assignee> existingAssignee = assigneeRepository.findByUserUserId(userId);
 
-        houseworkRepository.save(housework);
+        if (existingAssignee.isPresent()) {
+            Assignee assignee = existingAssignee.get();
+            assignee.setUser(newAssignee);
+        } else {
+            Assignee assignee = Assignee.of(userId,newAssignee);
+            assigneeRepository.save(assignee);
+        }
+
     }
 
     @Override
@@ -149,12 +161,14 @@ public class HouseworkServiceImpl implements HouseworkService {
                     .orElseGet(() -> Assignee.assignAssignee(userRepository.findById(request.userId())
                             .orElseThrow(() -> new HouseworkException(ExceptionCode.USER_NOT_FOUND))));
             final Assignee saveAssignee = assigneeRepository.saveAndFlush(assignee);
+
             final Housework housework = Housework.of(
                     request.startDate(),
                     request.startTime(),
                     request.task(),
                     HouseworkCategory.parse(request.category()),
                     saveAssignee,
+                    request.status(),
                     channel);
             houseworkRepository.save(housework);
         } catch (IllegalArgumentException exception) {

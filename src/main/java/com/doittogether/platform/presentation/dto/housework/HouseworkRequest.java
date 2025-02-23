@@ -1,5 +1,6 @@
 package com.doittogether.platform.presentation.dto.housework;
 
+import com.doittogether.platform.domain.enumeration.AssigneeStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
@@ -30,11 +31,13 @@ public record HouseworkRequest(
 
         @NotNull(message = "담당자의 유저ID를 입력해주세요.")
         @Schema(description = "작업 담당자 ID", example = "1")
-        Long userId
+        Long userId,
+
+        AssigneeStatus status
 ) {
     public static HouseworkRequest of(String category, String task, LocalDate startDate, LocalTime startTime,
                                       Boolean isAllDay,
-                                      Long userId) {
-        return new HouseworkRequest(category, task, startDate, startTime, userId);
+                                      Long userId, AssigneeStatus status) {
+        return new HouseworkRequest(category, task, startDate, startTime, userId,status);
     }
 }

@@ -58,7 +58,7 @@ public class AssignChoreChatGPTService {
         String assignProperHouswork = null;
         try {
             assignProperHouswork = TemplateUtil.replaceUserPersonalityWithJson(AssignChorePrompt.ASSIGN_CHORES_PROMPT,
-                    userPersonality, channelUserRequest.houseworkName());
+                    userPersonality,channelUserRequest.houseworkName());
         } catch (JsonProcessingException e) {
             throw new HouseworkException(ExceptionCode.HOUSEWORK_NOT_FOUND);
         }
