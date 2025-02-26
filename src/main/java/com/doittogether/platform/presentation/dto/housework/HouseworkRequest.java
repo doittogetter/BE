@@ -33,6 +33,8 @@ public record HouseworkRequest(
         @Schema(description = "작업 담당자 ID", example = "1")
         Long userId,
 
+        @NotNull(message = "담당자 할당의 상태를 입력해주세요")
+        @Schema(description = "담당자 할당 상태" , allowableValues = {"INVALID", "VALID", "SELECT"})
         AssigneeStatus status
 ) {
     public static HouseworkRequest of(String category, String task, LocalDate startDate, LocalTime startTime,
