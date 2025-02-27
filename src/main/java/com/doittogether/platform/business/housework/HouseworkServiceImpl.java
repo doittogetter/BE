@@ -50,6 +50,7 @@ public class HouseworkServiceImpl implements HouseworkService {
 
     @Override
     public HouseworkUserResponse assignHouseworkFromGPT(final HouseworkUserRequest request) {
+        channelValidator.validateExistChannel(request.channelId());
 
         Long userId = 0L;
         AssigneeStatus status = AssigneeStatus.VALID;
@@ -103,7 +104,6 @@ public class HouseworkServiceImpl implements HouseworkService {
             Assignee assignee = Assignee.of(userId,newAssignee);
             assigneeRepository.save(assignee);
         }
-
     }
 
     @Override

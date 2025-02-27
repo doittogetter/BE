@@ -61,7 +61,7 @@ public class Housework extends BaseEntity {
     private Channel channel;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = true)
+    @Column(nullable = false)
     private AssigneeStatus assigneeStatus;
 
     public void updateAssigneeStatus(AssigneeStatus assigneeStatus){
