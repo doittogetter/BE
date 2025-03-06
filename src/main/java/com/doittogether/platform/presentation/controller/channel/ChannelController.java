@@ -105,7 +105,18 @@ public class ChannelController {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 SuccessResponse.onSuccess(
                         SuccessCode._OK,
-                        channelService.generateInviteLink(channelId)
+                        channelService.generateInviteLink(channelId, false)
+                ));
+    }
+
+    @PostMapping("/{channelId}/invite-link-test") // 비공개 테스트 api
+    public ResponseEntity<SuccessResponse<ChannelInviteLinkResponse>> generateInviteLinkTest(
+            @PathVariable("channelId") Long channelId) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                SuccessResponse.onSuccess(
+                        SuccessCode._OK,
+                        channelService.generateInviteLink(channelId, true)
                 ));
     }
 
