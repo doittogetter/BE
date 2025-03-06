@@ -23,6 +23,7 @@ spring:
       maxmemory: 128M
       invite-link:
         ttl-minutes: ${REDIS_INVITE_TTL} # 초대 링크 TTL (분)
+        ttl-minutes-test: ${REDIS_INVITE_TEST_TTL}
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
