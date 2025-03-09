@@ -46,7 +46,7 @@ jobs:
           tags: ${{ env.DOCKER_HUB_REPOSITORY }}:latest
 
   backend-docker-pull-and-run:
-    runs-on: [self-hosted, dev]
+    runs-on: [self-hosted, prd]
     needs: [backend-docker-build-and-push]
     if: ${{ needs.backend-docker-build-and-push.result == 'success' }}
     steps:
