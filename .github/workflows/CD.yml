@@ -2,7 +2,7 @@ name: ✨ Doto backend DEV CD ✨
 
 env:
   PROFILE: default
-  DOCKER_HUB_REPOSITORY: ycjung1993/doto-dev
+  DOCKER_HUB_REPOSITORY: ycjung1993/doto-prd
   
 # 워크플로우 실행 조건
 on:
