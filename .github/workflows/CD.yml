@@ -45,12 +45,11 @@ jobs:
           platforms: linux/amd64
           tags: ${{ env.DOCKER_HUB_REPOSITORY }}:latest
 
-#  backend-docker-pull-and-run:
-#    runs-on: [self-hosted, dev]
-#    needs: [backend-docker-build-and-push]
-#    if: ${{ needs.backend-docker-build-and-push.result == 'success' }}
-#    steps:
-#      - name: ✨ 배포 스크립트 실행
-#        run: |
-#          sh /home/ubuntu/doittogether/deploy.sh
-#
+  backend-docker-pull-and-run:
+    runs-on: [self-hosted, dev]
+    needs: [backend-docker-build-and-push]
+    if: ${{ needs.backend-docker-build-and-push.result == 'success' }}
+    steps:
+      - name: ✨ 배포 스크립트 실행
+        run: |
+          sh /home/ubuntu/doittogether/deploy.sh
