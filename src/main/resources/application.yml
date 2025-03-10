@@ -20,6 +20,7 @@ spring:
         enabled: false
       host: ${REDIS_HOST} # redis 서버의 호스트 이름
       port: ${REDIS_PORT} # redis 서버의 포트 번호
+      password: ${REDIS_PASSWORD}
       maxmemory: 128M
       invite-link:
         ttl-minutes: ${REDIS_INVITE_TTL} # 초대 링크 TTL (분)

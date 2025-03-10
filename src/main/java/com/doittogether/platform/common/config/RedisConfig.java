@@ -13,7 +13,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Slf4j
-@Profile("prd")
 @Configuration
 public class RedisConfig {
 
@@ -25,7 +24,7 @@ public class RedisConfig {
     public RedisConfig(
             @Value("${spring.data.redis.host}") String host,
             @Value("${spring.data.redis.port}") int port,
-            @Value("${spring.data.redis.password:1234}") String password ) {
+            @Value("${spring.data.redis.password}") String password ) {
         this.host = host;
         this.port = port;
         this.password = password;
