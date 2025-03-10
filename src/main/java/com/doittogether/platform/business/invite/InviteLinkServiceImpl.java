@@ -3,11 +3,13 @@ package com.doittogether.platform.business.invite;
 import com.doittogether.platform.application.global.code.ExceptionCode;
 import com.doittogether.platform.application.global.exception.redis.InviteException;
 import com.doittogether.platform.business.redis.RedisSingleDataService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
+@Slf4j
 @Service
 public class InviteLinkServiceImpl implements InviteLinkService {
 
@@ -44,6 +46,7 @@ public class InviteLinkServiceImpl implements InviteLinkService {
             redisSingleDataService.storeDataWithExpiration(redisKey, channelId.toString(), Duration.ofMinutes(inviteLinkTtlMinutes));
             return newInviteLink;
         } catch (Exception e) {
+            log.error("초대 링크 생성 실패 (channelId: {}): {}", channelId, e.getMessage(), e);
             throw new InviteException(ExceptionCode.INVITE_LINK_GENERATION_FAILED);
         }
     }
