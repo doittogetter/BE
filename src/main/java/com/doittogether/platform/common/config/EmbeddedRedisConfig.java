@@ -18,7 +18,7 @@ import java.io.InputStreamReader;
 import java.util.Objects;
 
 @Slf4j
-@Profile("local")
+@Profile("dev")
 @Configuration
 public class EmbeddedRedisConfig {
 
