@@ -2,10 +2,7 @@ server:
   port: 8080
 
 logging:
-  level:
-    root: INFO
-  file:
-    name: application.log
+  config: classpath:logback-spring.xml
 
 spring:
   profiles:
@@ -31,13 +28,13 @@ spring:
     password: ${HOME_PASSWORD}
 
   jpa:
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
     database: mysql
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
   security:
     oauth2:
