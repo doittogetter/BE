@@ -29,6 +29,7 @@ public class InviteLinkServiceImplTest {
         // 직접 객체 생성 및 의존성 주입
         inviteLinkService = new InviteLinkServiceImpl(
                 redisSingleDataService,
+                10,
                 10
         );
 
@@ -52,7 +53,7 @@ public class InviteLinkServiceImplTest {
         when(redisSingleDataService.storeDataWithExpiration(eq(redisKey), eq(channelId.toString()), eq(Duration.ofMinutes(10))))
                 .thenReturn(1);
 
-        String result = inviteLinkService.generateInviteLink(channelId);
+        String result = inviteLinkService.generateInviteLink(channelId, false);
 
         assertEquals(existingInviteLink, result);
         verify(redisSingleDataService).storeDataWithExpiration(eq(redisKey), eq(channelId.toString()), eq(Duration.ofMinutes(10)));
