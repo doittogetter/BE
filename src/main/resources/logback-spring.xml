@@ -1,0 +1,41 @@
+<configuration scan="true">
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+
+    <!-- 변수 선언-->
+    <springProperty name="CONSOLE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %clr(%5level) %cyan(%logger) - %msg%n"/>
+    <springProperty name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %5level %logger - %msg%n"/>
+
+    <!-- 개발 서버 로그-->
+    <springProfile name="dev">
+        <include resource="file-info-appender.xml"/>
+
+        <root>
+            <appender-ref ref="INFO_FILE_LOG" />
+        </root>
+    </springProfile>
+
+    <!-- 운영 서버 로그 -->
+    <springProfile name="prd">
+        <include resource="file-error-appender.xml"/>
+
+        <root level="WARN">
+            <appender-ref ref="WARN_FILE_LOG" />
+        </root>
+    </springProfile>
+
+    <!-- 로컬 로그 -->
+    <springProfile name="local">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+</configuration>
