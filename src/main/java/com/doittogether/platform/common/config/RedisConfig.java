@@ -1,5 +1,6 @@
 package com.doittogether.platform.common.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+@Slf4j
 @Configuration
 public class RedisConfig {
 
@@ -32,7 +34,13 @@ public class RedisConfig {
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
         configuration.setHostName(host);
         configuration.setPort(port);
-        configuration.setPassword(RedisPassword.of(password)); // 비밀번호 설정
+
+        if (password != null && !password.isEmpty()) {
+            configuration.setPassword(RedisPassword.of(password));
+            log.info("Redis Connection Configured - Host: {}, Port: {}, Password: Enabled", host, port);
+        } else {
+            log.info("Redis Connection Configured - Host: {}, Port: {}, Password: Disabled", host, port);
+        }
 
         return new LettuceConnectionFactory(configuration);
     }
@@ -51,6 +59,7 @@ public class RedisConfig {
 
         redisTemplate.setDefaultSerializer(new StringRedisSerializer());
 
+        log.info("RedisTemplate configured successfully with StringRedisSerializer for keys, values, and hashes");
         return redisTemplate;
     }
 }

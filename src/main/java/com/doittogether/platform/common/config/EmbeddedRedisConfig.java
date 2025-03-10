@@ -4,6 +4,7 @@ import com.doittogether.platform.application.global.code.ExceptionCode;
 import com.doittogether.platform.application.global.exception.redis.EmbeddedRedisException;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Objects;
 
+@Slf4j
 @Profile("local")
 @Configuration
 public class EmbeddedRedisConfig {
@@ -38,12 +40,15 @@ public class EmbeddedRedisConfig {
         try {
             int embeddedRedisPort = port;
             if (isRedisRunning()) {
+                log.warn("Redis is already running on port {}. Finding an available port...", port);
                 embeddedRedisPort = findAvailablePort();
+                log.info("Available port found: {}", embeddedRedisPort);
             }
 
             if (isArmArchitecture()) {
                 File redisExecutable = getRedisServerExecutable();
                 redisServer = new RedisServer(Objects.requireNonNull(redisExecutable), embeddedRedisPort);
+                log.info("Embedded Redis configured for ARM architecture on port {}", embeddedRedisPort);
             }
 
             if (!isArmArchitecture()) {
@@ -51,10 +56,13 @@ public class EmbeddedRedisConfig {
                         .port(embeddedRedisPort)
                         .setting("maxmemory " + maxMemory)
                         .build();
+                log.info("Embedded Redis configured for standard architecture on port {} with maxMemory: {}", embeddedRedisPort, maxMemory);
             }
 
             redisServer.start();
+            log.info("Embedded Redis Server started on port {}", embeddedRedisPort);
         } catch (Exception e) {
+            log.error("Failed to start Embedded Redis on port {}: {}", port, e.getMessage(), e);
             throw new EmbeddedRedisException(ExceptionCode.EMBEDDED_REDIS_START_FAILED);
         }
     }
