@@ -117,11 +117,11 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public ChannelInviteLinkResponse generateInviteLink(Long channelId) {
+    public ChannelInviteLinkResponse generateInviteLink(Long channelId, boolean isTest) {
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new ChannelException(ExceptionCode.CHANNEL_NOT_FOUND));
 
-        String inviteLink = inviteLinkService.generateInviteLink(channelId);
+        String inviteLink = inviteLinkService.generateInviteLink(channelId, isTest);
 
         return ChannelInviteLinkResponse.of(channel, inviteLink);
     }
