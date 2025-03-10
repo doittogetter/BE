@@ -76,7 +76,7 @@ public class HouseworkServiceImpl implements HouseworkService {
             final List<User> channelUsers = userRepository.findByChannelId(request.channelId());
 
             Random random = new Random();
-            int randomValue = random.nextInt(channelUsers.size());
+            int randomValue = random.nextInt(channelUsers.size())+1;
 
             userId=channelUsers.get(randomValue).getUserId();
         }
