@@ -12,6 +12,7 @@ import com.doittogether.platform.infrastructure.persistence.housework.HouseworkR
 import com.doittogether.platform.infrastructure.persistence.reaction.ReactionRepository;
 import com.doittogether.platform.infrastructure.persistence.user.UserRepository;
 import com.doittogether.platform.infrastructure.persistence.channel.ChannelRepository;
+import com.doittogether.platform.presentation.dto.channel.request.ChannelInviteLinkTestRequest;
 import com.doittogether.platform.presentation.dto.channel.request.ChannelKickUserRequest;
 import com.doittogether.platform.presentation.dto.channel.request.ChannelRegisterRequest;
 import com.doittogether.platform.presentation.dto.channel.request.ChannelUpdateRequest;
@@ -117,11 +118,21 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public ChannelInviteLinkResponse generateInviteLink(Long channelId, boolean isTest) {
+    public ChannelInviteLinkResponse generateInviteLink(Long channelId) {
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new ChannelException(ExceptionCode.CHANNEL_NOT_FOUND));
 
-        String inviteLink = inviteLinkService.generateInviteLink(channelId, isTest);
+        String inviteLink = inviteLinkService.generateInviteLink(channelId);
+
+        return ChannelInviteLinkResponse.of(channel, inviteLink);
+    }
+
+    @Override
+    public ChannelInviteLinkResponse generateInviteLinkTest(Long channelId, ChannelInviteLinkTestRequest request) {
+        Channel channel = channelRepository.findById(channelId)
+                .orElseThrow(() -> new ChannelException(ExceptionCode.CHANNEL_NOT_FOUND));
+
+        String inviteLink = inviteLinkService.generateInviteLinkTest(channelId, request);
 
         return ChannelInviteLinkResponse.of(channel, inviteLink);
     }
