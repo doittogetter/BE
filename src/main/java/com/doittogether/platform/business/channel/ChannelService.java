@@ -14,7 +14,9 @@ public interface ChannelService {
     ChannelRegisterResponse createChannel(User loginUser, ChannelRegisterRequest request);
     ChannelUpdateResponse updateChannelName(User loginUser, Long channelId, ChannelUpdateRequest request);
     ChannelUserListResponse getChannelUsers(User loginUser, Long channelId, Pageable pageable);
-    ChannelInviteLinkResponse generateInviteLink(Long channelId, boolean isTest);
+    ChannelInviteLinkResponse generateInviteLink(Long channelId);
+    ChannelInviteLinkResponse generateInviteLinkTest(Long channelId, ChannelInviteLinkTestRequest request);
+
     ChannelJoinResponse joinChannelViaInviteLink(User loginUser, String request);
     ChannelKickUserResponse kickUserFromChannel(User loginUser, Long channelId, ChannelKickUserRequest request);
 
