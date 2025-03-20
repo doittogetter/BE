@@ -5,6 +5,7 @@ import com.doittogether.platform.application.global.exception.redis.InviteExcept
 import com.doittogether.platform.business.redis.RedisSingleDataService;
 import com.doittogether.platform.presentation.dto.channel.request.ChannelInviteLinkTestRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -68,15 +69,23 @@ public class InviteLinkServiceImpl implements InviteLinkService {
     @Override
     public Long validateInviteLink(String inviteLink) {
         try {
+            // Redis에서 초대 링크를 찾을 두 개의 키
             String redisKey = INVITE_LINK_PREFIX + inviteLink;
-            String channelId = redisSingleDataService.fetchData(redisKey);
+            String redisKeyWithLock = redisKey + INVITE_LINK_LOCK;
 
-            if (channelId == null || channelId.isEmpty()) {
+            String channelId = redisSingleDataService.fetchData(redisKey);
+            if (StringUtils.isBlank(channelId)) {
+                channelId = redisSingleDataService.fetchData(redisKeyWithLock);
+            }
+
+            if (StringUtils.isBlank(channelId)) {
+                log.warn("유효하지 않은 초대 링크: {}", inviteLink);
                 throw new InviteException(ExceptionCode.INVITE_LINK_INVALID);
             }
 
             return Long.parseLong(channelId);
         } catch (NumberFormatException e) {
+            log.error("초대 링크 채널 ID 변환 실패 (inviteLink: {}, value: {})", inviteLink, e.getMessage(), e);
             throw new InviteException(ExceptionCode.INVITE_LINK_CHANNEL_ID_PARSE_FAILED);
         }
     }
