@@ -5,6 +5,7 @@ import com.doittogether.platform.application.global.response.SuccessResponse;
 import com.doittogether.platform.business.fcm.FcmService;
 import com.doittogether.platform.business.user.UserService;
 import com.doittogether.platform.domain.entity.User;
+import com.doittogether.platform.presentation.dto.fcm.RemoveTokenRequest;
 import com.doittogether.platform.presentation.dto.fcm.SaveOrUpdateTokenRequest;
 import com.doittogether.platform.presentation.dto.reaction.ReactionRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +36,21 @@ public class FcmController {
         User user = userService.findByIdOrThrow(userId);
 
         fcmService.saveOrUpdateToken(user, saveOrUpdateTokenRequest);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(SuccessResponse.onSuccess(SuccessCode._OK, null));
+    }
+
+    @Operation(summary = "FCM 토큰 삭제", description = "로그인한 사용자의 특정 FCM 토큰을 삭제(비활성화)합니다.")
+    @DeleteMapping("/token")
+    public ResponseEntity<SuccessResponse<Void>> removeToken(
+            Principal principal,
+            @RequestBody RemoveTokenRequest removeTokenRequest) {
+
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.findByIdOrThrow(userId);
+
+        fcmService.removeToken(user, removeTokenRequest);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.onSuccess(SuccessCode._OK, null));
