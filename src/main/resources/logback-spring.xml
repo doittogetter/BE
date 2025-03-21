@@ -1,41 +1,81 @@
-<configuration scan="true">
-
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
 
-    <!-- 변수 선언-->
-    <springProperty name="CONSOLE_LOG_PATTERN"
-              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %clr(%5level) %cyan(%logger) - %msg%n"/>
-    <springProperty name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %5level %logger - %msg%n"/>
+    <property name="CONSOLE_LOG_PATTERN"
+              value="[%date{yyyy-MM-dd HH:mm:ss.SSS}] [%X{guid}] [%clr(%5level)] %cyan(%-40.40logger{39}) [%4line] : %msg%n%ex{full}"/>
 
-    <!-- 개발 서버 로그-->
-    <springProfile name="dev">
-        <include resource="file-info-appender.xml"/>
+<!--    <property name="CONSOLE_LOG_PATTERN"-->
+<!--                    value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %clr(%5level) %cyan(%logger) - %msg%n"/>-->
 
-        <root>
-            <appender-ref ref="INFO_FILE_LOG" />
-        </root>
-    </springProfile>
+    <property name="FILE_LOG_PATTERN"
+              value="[%date{yyyy-MM-dd HH:mm:ss.SSS}] [%X{guid}] [%-5level] %-40.40logger{39} [%4line] : %msg%n%ex{full}"/>
 
-    <!-- 운영 서버 로그 -->
-    <springProfile name="prd">
-        <include resource="file-error-appender.xml"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
 
-        <root level="WARN">
-            <appender-ref ref="WARN_FILE_LOG" />
-        </root>
-    </springProfile>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
 
-    <!-- 로컬 로그 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./log/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Spring & Hibernate 관련 -->
+    <logger name="org.springframework" level="ERROR"/>
+    <logger name="_org.springframework" level="ERROR"/>
+
+    <!-- Hibernate, HikariCP -->
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="com.zaxxer.hikari" level="WARN"/>
+
+    <!-- 서버 / 톰캣 -->
+    <logger name="org.apache.catalina" level="WARN"/>
+
+    <!-- Netty, Lettuce, Reactor -->
+    <logger name="io.netty" level="WARN"/>
+    <logger name="io.lettuce" level="WARN"/>
+    <logger name="reactor.core" level="WARN"/>
+    <logger name="reactor.util" level="WARN"/>
+
+    <!-- Micrometer -->
+    <logger name="io.micrometer" level="WARN"/>
+
+    <!-- SLF4J Provider -->
+    <logger name="org.jboss.logging" level="WARN"/>
+
     <springProfile name="local">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-            </encoder>
-        </appender>
+        <logger name="com.doittogether.platform" level="DEBUG" />
 
-        <root level="INFO">
+        <root level="ERROR">
             <appender-ref ref="CONSOLE" />
         </root>
     </springProfile>
+
+    <springProfile name="dev">
+        <logger name="com.doittogether.platform" level="INFO" />
+
+        <root level="ERROR">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+
+    <springProfile name="prd">
+        <logger name="com.doittogether.platform" level="WARN" />
+
+        <root level="ERROR">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+
 </configuration>
