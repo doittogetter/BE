@@ -64,7 +64,6 @@
         <logger name="com.doittogether.platform" level="INFO" />
 
         <root level="ERROR">
-            <appender-ref ref="CONSOLE" />
             <appender-ref ref="FILE" />
         </root>
     </springProfile>
@@ -73,7 +72,6 @@
         <logger name="com.doittogether.platform" level="WARN" />
 
         <root level="ERROR">
-            <appender-ref ref="CONSOLE" />
             <appender-ref ref="FILE" />
         </root>
     </springProfile>
