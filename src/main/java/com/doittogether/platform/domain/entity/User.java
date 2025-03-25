@@ -47,8 +47,8 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = ALL)
     private List<UserChannel> userChannels = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", cascade = ALL)
-    private FcmToken fcmToken;
+    @OneToMany(mappedBy = "user", cascade = ALL)
+    private List<FcmToken> fcmTokens = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = ALL)
     private Assignee assignee;

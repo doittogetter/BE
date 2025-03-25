@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
@@ -15,7 +17,7 @@ public class FcmToken extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -35,5 +37,13 @@ public class FcmToken extends BaseEntity {
 
     public void updateToken(String token) {
         this.token = token;
+    }
+
+    public void markAsDeleted() {
+        this.recordDeletedAt(LocalDateTime.now());
+    }
+
+    public void reactivate() {
+        this.recordDeletedAt(null);
     }
 }

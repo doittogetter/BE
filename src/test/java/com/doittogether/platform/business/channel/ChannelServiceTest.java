@@ -189,16 +189,16 @@ public class ChannelServiceTest {
         setField(mockChannel, "channelId", channelId);
 
         when(channelRepository.findById(channelId)).thenReturn(Optional.of(mockChannel));
-        when(inviteLinkService.generateInviteLink(channelId, false)).thenReturn(mockInviteLink);
+        when(inviteLinkService.generateInviteLink(channelId)).thenReturn(mockInviteLink);
 
-        ChannelInviteLinkResponse response = channelService.generateInviteLink(channelId, false);
+        ChannelInviteLinkResponse response = channelService.generateInviteLink(channelId);
 
         assertNotNull(response);
         assertEquals(mockChannel.getChannelId(), response.channelId());
         assertEquals(mockInviteLink, response.inviteLink());
 
         verify(channelRepository, times(1)).findById(channelId);
-        verify(inviteLinkService, times(1)).generateInviteLink(channelId, false);
+        verify(inviteLinkService, times(1)).generateInviteLink(channelId);
     }
 
     @Test

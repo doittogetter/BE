@@ -1,8 +1,11 @@
 package com.doittogether.platform.presentation.dto.fcm;
 
 import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.util.List;
 
 @Schema(description = "푸쉬 알림 요청 메세지 DTO")
 public record NotificationRequest(
@@ -23,4 +26,15 @@ public record NotificationRequest(
                 .setToken(token)
                 .build();
     }
+
+    public static MulticastMessage makeMulticastMessage(NotificationRequest notificationRequest, List<String> tokens) {
+        return MulticastMessage.builder()
+                .addAllTokens(tokens)
+                .setNotification(Notification.builder()
+                        .setTitle(notificationRequest.title)
+                        .setBody(notificationRequest.content)
+                        .build())
+                .build();
+    }
+
 }

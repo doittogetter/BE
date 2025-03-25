@@ -15,6 +15,7 @@ java {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -23,6 +24,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.4'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
@@ -73,5 +77,5 @@ dependencies {
 }
 
 tasks.named('test') {
-    //useJUnitPlatform()
+    // useJUnitPlatform()
 }

@@ -113,3 +113,10 @@ management:
 
 firebase:
   sdk-jsonPath: ${FIREBASE_SDK_JSON_PATH}
+
+discord:
+  webhook:
+    signup:
+      url: https://discord.com/api/webhooks/1351202254719418522/oCcdU1crINCsrTIQMYAjZFQEkO6JzERkSQ-4aL1RS4LjyJ3vqQQ1m3uVq_NRAUHKcufh
+    error:
+      url: https://discord.com/api/webhooks/1351188460580638741/tpBvVoeR6BfObi4WwZemj0DpkIpHW6_dufPvHj4SNqVMZdUanqtlSDmcU8F4zf1_n_DR

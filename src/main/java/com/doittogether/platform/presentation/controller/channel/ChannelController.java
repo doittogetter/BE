@@ -5,6 +5,7 @@ import com.doittogether.platform.application.global.response.SuccessResponse;
 import com.doittogether.platform.business.channel.ChannelService;
 import com.doittogether.platform.business.user.UserService;
 import com.doittogether.platform.domain.entity.User;
+import com.doittogether.platform.presentation.dto.channel.request.ChannelInviteLinkTestRequest;
 import com.doittogether.platform.presentation.dto.channel.request.ChannelKickUserRequest;
 import com.doittogether.platform.presentation.dto.channel.request.ChannelRegisterRequest;
 import com.doittogether.platform.presentation.dto.channel.request.ChannelUpdateRequest;
@@ -105,18 +106,19 @@ public class ChannelController {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 SuccessResponse.onSuccess(
                         SuccessCode._OK,
-                        channelService.generateInviteLink(channelId, false)
+                        channelService.generateInviteLink(channelId)
                 ));
     }
 
     @PostMapping("/{channelId}/invite-link-test") // 비공개 테스트 api
     public ResponseEntity<SuccessResponse<ChannelInviteLinkResponse>> generateInviteLinkTest(
-            @PathVariable("channelId") Long channelId) {
+            @PathVariable("channelId") Long channelId,
+            @RequestBody ChannelInviteLinkTestRequest request) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 SuccessResponse.onSuccess(
                         SuccessCode._OK,
-                        channelService.generateInviteLink(channelId, true)
+                        channelService.generateInviteLinkTest(channelId, request)
                 ));
     }
 
