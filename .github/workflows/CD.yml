@@ -2,13 +2,13 @@ name: ✨ Doto backend DEV CD ✨
 
 env:
   PROFILE: default
-  DOCKER_HUB_REPOSITORY: eundeang/doto-dev
+  DOCKER_HUB_REPOSITORY: ycjung1993/doto-prd
   
 # 워크플로우 실행 조건
 on:
   workflow_dispatch:
   push:
-    branches: ["main"]
+    branches: ["release"]
 
 jobs:
   backend-docker-build-and-push:
@@ -41,14 +41,15 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          platforms: linux/arm64
+          # platforms: linux/arm64
+          platforms: linux/amd64
           tags: ${{ env.DOCKER_HUB_REPOSITORY }}:latest
 
   backend-docker-pull-and-run:
-    runs-on: [self-hosted, dev]
+    runs-on: [self-hosted, prd]
     needs: [backend-docker-build-and-push]
     if: ${{ needs.backend-docker-build-and-push.result == 'success' }}
     steps:
       - name: ✨ 배포 스크립트 실행
         run: |
-          sh /home/ubuntu/deploy.sh
+          sh /home/ubuntu/doittogether/deploy.sh
