@@ -7,6 +7,8 @@ import com.doittogether.platform.business.user.UserService;
 import com.doittogether.platform.domain.entity.User;
 import com.doittogether.platform.presentation.dto.fcm.RemoveTokenRequest;
 import com.doittogether.platform.presentation.dto.fcm.SaveOrUpdateTokenRequest;
+import com.doittogether.platform.presentation.dto.reaction.CheckTokenRequest;
+import com.doittogether.platform.presentation.dto.reaction.CheckTokenResponse;
 import com.doittogether.platform.presentation.dto.reaction.ReactionRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -69,5 +71,18 @@ public class FcmController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponse.onSuccess(SuccessCode._OK, null));
+    }
+
+    @Operation(summary = "FCM 토큰 활성화 여부 확인", description = "사용자 FCM 토큰이 활성화 된 상태인지 확인합니다.")
+    @PostMapping("/token/check")
+    public ResponseEntity<SuccessResponse<CheckTokenResponse>> checkTokenActive(
+            Principal principal,
+            @RequestBody CheckTokenRequest request) {
+
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.findByIdOrThrow(userId);
+
+        return ResponseEntity.ok(SuccessResponse.onSuccess(
+                SuccessCode._OK, fcmService.isTokenActive(user, request)));
     }
 }
