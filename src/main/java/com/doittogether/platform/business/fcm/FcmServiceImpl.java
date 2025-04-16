@@ -9,6 +9,8 @@ import com.doittogether.platform.infrastructure.persistence.user.UserRepository;
 import com.doittogether.platform.presentation.dto.fcm.NotificationRequest;
 import com.doittogether.platform.presentation.dto.fcm.RemoveTokenRequest;
 import com.doittogether.platform.presentation.dto.fcm.SaveOrUpdateTokenRequest;
+import com.doittogether.platform.presentation.dto.reaction.CheckTokenRequest;
+import com.doittogether.platform.presentation.dto.reaction.CheckTokenResponse;
 import com.doittogether.platform.presentation.dto.reaction.ReactionRequest;
 import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +41,7 @@ public class FcmServiceImpl implements FcmService {
         fcmTokenRepository.findByUserAndToken(loginUser, token).ifPresentOrElse(existingToken -> {
             if (existingToken.getDeletedAt() != null) {
                 existingToken.reactivate();
-                log.info("삭제된 FCM 토큰이 복구되었습니다. User: {}, Token: {}", loginUser.getUserId(), token);
+                log.info("삭제 예정인 FCM 토큰이 복구되었습니다. User: {}, Token: {}", loginUser.getUserId(), token);
             } else {
                 log.info("이미 등록된 FCM 토큰입니다. User: {}, Token: {}", loginUser.getUserId(), token);
             }
@@ -100,5 +102,14 @@ public class FcmServiceImpl implements FcmService {
     @Transactional
     public void cleanUpOldTokens(LocalDateTime threshold) {
         fcmTokenRepository.deleteAllByDeletedAtBefore(threshold);
+    }
+
+    @Override
+    public CheckTokenResponse isTokenActive(User loginUser, CheckTokenRequest request) {
+        boolean isActive = fcmTokenRepository.findByUserAndToken(loginUser, request.token())
+                .filter(fcmToken -> fcmToken.getDeletedAt() == null)
+                .isPresent();
+
+        return new CheckTokenResponse(isActive);
     }
 }
