@@ -102,11 +102,12 @@ public class StatisticsServiceImpl implements StatisticsService {
                     Assignee assignee = entry.getKey();
                     List<Housework> dailyHouseworks = entry.getValue();
 
+                    Long userId = assignee.retrieveUser().getUserId();
                     String nickName = assignee.retrieveUser().getNickName();
                     long completedTasks = dailyHouseworks.stream()
                             .filter(housework -> housework.getStatus() == Status.COMPLETE)
                             .count();
-                    String profileImageUrl = userRepository.findProfileImageUrlByNickName(nickName).orElse("");
+                    String profileImageUrl = userRepository.findProfileImageUrlByUserId(userId).orElse("");
 
                     return new PersonalCompleteScoreResponse(nickName, Math.toIntExact(completedTasks), profileImageUrl);
                 })
