@@ -5,6 +5,7 @@ import com.doittogether.platform.application.global.exception.user.UserException
 import com.doittogether.platform.common.config.jwt.JwtProvider;
 import com.doittogether.platform.common.config.jwt.JwtValidationType;
 import com.doittogether.platform.common.config.jwt.UserAuthentication;
+import com.doittogether.platform.common.config.wrapper.CachedBodyHttpServletRequest;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,21 +32,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
+        CachedBodyHttpServletRequest wrappedRequest = new CachedBodyHttpServletRequest(request);
+
         try {
-            final String token = getJwtFromRequest(request);
+            final String token = getJwtFromRequest(wrappedRequest);
             log.info("Extracted JWT Token: {}", token);
             if (jwtProvider.validateToken(token) == JwtValidationType.VALID_TOKEN) {
                 final Long memberId = jwtProvider.getUserFromJwt(token);
                 log.info("JWT authentication successful for userId: {}", memberId);
                 UserAuthentication authentication = new UserAuthentication(memberId.toString(), null, null);
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(wrappedRequest));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception exception) {
             log.error("JWT Authentication processing error", exception);
             throw new UserException(ExceptionCode._INTERNAL_SERVER_ERROR);
         }
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(wrappedRequest, response);
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

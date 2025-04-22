@@ -33,13 +33,13 @@ spring:
     password: ${HOME_PASSWORD}
 
   jpa:
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
     database: mysql
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
   security:
     oauth2:
