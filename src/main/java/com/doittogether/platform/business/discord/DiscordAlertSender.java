@@ -3,11 +3,13 @@ package com.doittogether.platform.business.discord;
 import com.doittogether.platform.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Profile("prd")
 public class DiscordAlertSender {
 
     private final DiscordErrorClientApi discordErrorClientApi;

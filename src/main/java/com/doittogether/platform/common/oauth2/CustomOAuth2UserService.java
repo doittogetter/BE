@@ -1,7 +1,6 @@
 package com.doittogether.platform.common.oauth2;
 
 import com.doittogether.platform.business.discord.DiscordAlertSender;
-import com.doittogether.platform.business.discord.DiscordMessageGenerator;
 import com.doittogether.platform.common.oauth2.dto.*;
 import com.doittogether.platform.domain.entity.ProfileImage;
 import com.doittogether.platform.domain.entity.User;
@@ -15,6 +14,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -22,8 +23,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
     private final ProfileImageRepository profileImageRepository;
-    private final DiscordAlertSender discordAlertSender;
-    private final DiscordMessageGenerator discordMessageGenerator;
+    private final Optional<DiscordAlertSender> discordAlertSender;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -67,7 +67,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     socialId,
                     profileImage
             );
-            discordAlertSender.sendDiscordAlarm(user);
+            discordAlertSender.ifPresent(sender -> sender.sendDiscordAlarm(user));
             return new CustomOAuth2User(oAuth2UserDTO);
         }
         final OAuth2UserDTO oAuth2UserDTO = OAuth2UserDTO.of(
