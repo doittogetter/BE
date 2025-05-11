@@ -116,7 +116,7 @@ firebase:
 
 discord:
   webhook:
-    signup: ${DISCORD_SIGN_UP}
-      url:
+    signup:
+      url: ${DISCORD_SIGN_UP}
     error:
       url: ${DISCORD_ERROR}
