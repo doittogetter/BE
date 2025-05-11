@@ -17,11 +17,19 @@ public class DiscordAlertSender {
     private final DiscordMessageGenerator discordMessageGenerator;
 
     public void sendDiscordAlarm(Exception exception) {
-        discordErrorClientApi.sendAlarm(discordMessageGenerator.createMessage(exception));
+        try {
+            discordErrorClientApi.sendAlarm(discordMessageGenerator.createMessage(exception));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 
     public void sendDiscordAlarm(User user) {
-        log.debug("discord 알림 전송 중");
-        discordSignUpClientApi.sendAlarm(discordMessageGenerator.createMessage(user));
+        try {
+            log.debug("discord 알림 전송 중");
+            discordSignUpClientApi.sendAlarm(discordMessageGenerator.createMessage(user));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 }
