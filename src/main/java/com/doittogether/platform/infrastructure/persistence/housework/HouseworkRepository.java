@@ -51,6 +51,13 @@ public interface HouseworkRepository extends JpaRepository<Housework, Long> {
                                                                   Pageable pageable,
                                                                   @Param("startDate") final LocalDate startDate);
 
+    List<Housework> findByChannelChannelIdAndStartDateBetweenAndStatus(
+            Long channelId,
+            LocalDate startDate,
+            LocalDate endDate,
+            Status status
+    );
+
     List<Housework> findByChannelChannelIdAndStartDateBetween(Long channelId, LocalDate startOfWeek, LocalDate endOfWeek);
 
     Optional<Housework> findByChannelChannelIdAndHouseworkId(Long channelId, Long houseworkId);
