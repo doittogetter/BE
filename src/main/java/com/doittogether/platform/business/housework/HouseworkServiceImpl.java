@@ -225,8 +225,16 @@ public class HouseworkServiceImpl implements HouseworkService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Housework> monthlyHouseworkCheck(Long channelId, LocalDate targetDate){
+    public List<Housework> weeklyHouseworkCheck(Long channelId, LocalDate targetDate) {
+        final LocalDate startOfWeek = targetDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        final LocalDate endOfWeek = targetDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
 
+        return houseworkRepository.findByChannelChannelIdAndStartDateBetweenAndStatus(channelId, startOfWeek, endOfWeek, Status.COMPLETE);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Housework> monthlyHouseworkCheck(Long channelId, LocalDate targetDate){
         final LocalDate firstDayOfMonth = targetDate.with(TemporalAdjusters.firstDayOfMonth()); // 1일
         final LocalDate lastDayOfMonth = targetDate.with(TemporalAdjusters.lastDayOfMonth()); // 해당 달의 마지막 날
 

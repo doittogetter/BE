@@ -37,6 +37,8 @@ public interface HouseworkService {
 
     Map<String, Integer> calculateHouseworkStatisticsForWeek(Long channelId, LocalDate targetDate);
 
+    List<Housework> weeklyHouseworkCheck(Long channelId, LocalDate targetDate);
+
     List<Housework> monthlyHouseworkCheck(Long channelId, LocalDate targetDate);
 
     IncompleteScoreResponse houseworkIncompleteCountCheck(User loginuser, Long channelId, LocalDate targetDate);
