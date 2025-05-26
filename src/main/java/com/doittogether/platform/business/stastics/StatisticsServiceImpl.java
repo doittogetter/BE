@@ -40,7 +40,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         channelValidator.validateExistChannel(channelId);
         channelValidator.checkChannelParticipation(loginUser, channelId);
 
-        final List<Housework> houseworkList = houseworkService.monthlyHouseworkCheck(channelId, targetDate);
+        final List<Housework> houseworkList = houseworkService.weeklyHouseworkCheck(channelId, targetDate);
 
         try {
             final List<PersonalCompleteScoreResponse> statisticsList = generateWeeklyStatistics(houseworkList);
